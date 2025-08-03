@@ -44,10 +44,10 @@ export default function Page() {
         <Card className='w-full max-w-md p-6 sm:p-8 shadow-xl backdrop-blur-md bg-white/90 rounded-xl'>
           <CardHeader>
             <CardTitle className='text-center text-3xl font-bold text-gray-800'>
-              Sign In
+              Forgot password
             </CardTitle>
             <CardDescription className='text-sm text-center text-gray-600'>
-              Use your email or service to login
+            You forgot your password? Here you can easily retrieve a new password.
             </CardDescription>
           </CardHeader>
 
@@ -62,48 +62,23 @@ export default function Page() {
                 placeholder='Enter your email...'
                 className='bg-gray-100'
               />
-              <Input
-                type='password'
-                disabled={pending}
-                name='password'
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                placeholder='********'
-                className='bg-gray-100'
-              />
+             
               <Button
                 type='submit'
                 disabled={pending}
                 className='w-full bg-indigo-600 text-white hover:bg-indigo-700 transition-transform hover:scale-105'
               >
-                Login
+                Continue
               </Button>
             </form>
 
-           
-            <div className='my-4'>
-              <Button
-                onClick={() => {}}
-                variant='outline'
-                size='lg'
-                disabled={pending}
-                className='w-full flex items-center justify-center gap-2 bg-slate-200 hover:bg-slate-300 transition-transform hover:scale-105'
-              >
-                <FcGoogle className='size-6' />
-                Continue with Google
-              </Button>
-            </div>
-
             <Separator className='my-4' />
-            <Link href='/auth/forgot-password' className='text-sky-600 ml-2 hover:underline'>
-                Forgot-password
-              </Link>
-
-            <p className='text-center  text-sm text-muted-foreground'>
+           
+         <p className='text-center  text-sm text-muted-foreground'>
           
-              If you don't have an account,
-              <Link href='/auth/sign-up' className='text-sky-600 ml-2 hover:underline'>
-                Sign up
+              Back to login,
+              <Link href='/auth/login' className='text-sky-600 ml-2 hover:underline'>
+                Login
               </Link>
             </p>
           </CardContent>

@@ -1,25 +1,25 @@
 export const task=[
     {
       task: 'የ HRMS ሲስተሞች፣ አቴንዳንስ፣ ትራንስፖርት፣ ክሊኒክ የውሂብ ስርዓቶች',
-      weight: 24,
+      weight: 25,
       rank: 3,
    
     },
     {
       task: 'በተቻለ መጠን የስራ ደረጃ ጥራት',
-      weight: 18,
+      weight: 20,
       rank: 3,
    
     },
     {
       task: 'በተገቢ ወቅት የመረጃ አዘምንት፣ ኮፒ በመስጠት የምርመራ ክፍል',
-      weight: 17,
+      weight: 15,
       rank: 3,
    
     },
     {
       task: 'ለተወሰኑ መሳሪያዎች መሳሪያ የመዝገብ እና የመጠቀሚያ',
-      weight: 16,
+      weight: 15,
       rank: 2,
   
     },

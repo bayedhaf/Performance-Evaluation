@@ -9,39 +9,45 @@ import {
 
 import React from 'react'
 import Image from 'next/image'
+
 export default function SideBar() {
   return (
-    <Card className="h-screen w-full sm:w-64 bg-white shadow-xl border-r flex flex-col">
-      
+    <Card className="h-screen w-full sm:w-64 pt-6 bg-white shadow-xl border-r flex flex-col ">
     
-      <CardHeader className="text-center border-b py-6 bg-blue-900 text-white shadow-md">
-        <CardTitle className="text-lg font-semibold tracking-wide">
-        <Image
-                src="/image/astuLogo.png"
-                alt="ASTU Logo"
-                width={100}
-                height={100}
-                className="rounded-full object-cover"
-                />
-        </CardTitle>
+      <CardHeader className="text-center border-b py-6 bg-[#8D92EB] text-white shadow-md">
+        <div className="flex flex-col items-center">
+          <Image
+            src="/image/me.jpg"
+            alt="ASTU Logo"
+            width={80}
+            height={80}
+            className="rounded-full object-cover mb-2"
+          />
+          <CardTitle className="text-white text-lg font-semibold tracking-wide">
+          <span className="font-semibold text-black">Full Name:</span> Bayisa Balcha
+          </CardTitle>
+        </div>
       </CardHeader>
 
     
-      <div className="flex flex-col gap-4 p-6">
-
-        <Card className="bg-amber-100 hover:bg-amber-200 transition cursor-pointer shadow-sm">
-          <CardContent className="text-blue-700 font-medium py-4 text-center">
-            User Data
-          </CardContent>
-        </Card>
-
-        <Card className="bg-amber-100 hover:bg-amber-200 transition cursor-pointer shadow-sm">
-          <CardContent className="text-blue-700 font-medium py-4 text-center">
-            User Data Info
-          </CardContent>
-        </Card>
-
-      </div>
+      <CardContent className="p-4 space-y-3 text-sm text-gray-800">
+       
+        <div>
+          <span className="font-semibold text-gray-600">Position:</span> Senior Software Engineer
+        </div>
+        <div>
+          <span className="font-semibold text-gray-600">Department:</span> Software Engineering
+        </div>
+        <div>
+          <span className="font-semibold text-gray-600">Email:</span> bayisa@example.com
+        </div>
+        <div>
+          <span className="font-semibold text-gray-600">Phone:</span> +251 95 123 4567
+        </div>
+        <div>
+          <span className="font-semibold text-gray-600">Status:</span> Active
+        </div>
+      </CardContent>
     </Card>
   )
 }

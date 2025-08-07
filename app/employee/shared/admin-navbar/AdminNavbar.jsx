@@ -18,7 +18,7 @@ export default function AdminNavbar() {
   ]
 
   return (
-    <Card className='bg-[#8D92EB] text-white w-full shadow-md'>
+    <Card className='w-full bg-[#8D92EB] text-white shadow-md rounded-none px-6 py-4 z-50 relative'>
       <nav className='flex items-center justify-between px-4 py-1 ml-14 mr-14'>
        
         <div className="flex items-center gap-2">

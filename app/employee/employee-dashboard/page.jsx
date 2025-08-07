@@ -8,19 +8,12 @@ import {
 } from '@/components/ui/card'
 import Link from 'next/link'
 import React from 'react'
-import SideBar from '../shared/navbar/sidebar/page'
+
 
 export default function Page() {
   return (
     <div className="flex min-h-screen bg-gray-100">
-      
-      {/* Sidebar */}
-      <div className="w-64 hidden sm:block">
-        <SideBar />
-      </div>
-
-    
-      <main className="flex-1 p-4 sm:p-8 md:p-12 lg:p-16">
+       <main className="flex-1 p-4 sm:p-8 md:p-12 lg:p-16">
         <div className="flex flex-col md:flex-row flex-wrap gap-6 justify-between items-stretch">
 
        

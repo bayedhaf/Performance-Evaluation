@@ -15,7 +15,7 @@ import { FcGoogle } from 'react-icons/fc'
 import Link from 'next/link'
 import Image from 'next/image'
 
-export default function Page() {
+export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' })
   const [pending,setPending]=useState(false)
   return (

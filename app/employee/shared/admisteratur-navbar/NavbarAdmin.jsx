@@ -8,13 +8,14 @@ import { IoMdPersonAdd, IoMdMenu } from "react-icons/io"
 import { MdCancel } from "react-icons/md"
 
 
-export default function AdminNavbar() {
+export default function AdminstractureNavBar() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'Notification', href: '/notification' },
-    { name: 'Review', href: '/review' },
+    { name: 'Dashboard', href: '/dashboard' },
+    { name: 'Reports', href: '/reports' },
+    { name: 'Employees', href: '/employee' },
+    { name: 'Department', href: '/deparment' },
   ]
 
   return (
@@ -29,7 +30,7 @@ export default function AdminNavbar() {
             width={50}
             alt='ASTU'
           />
-          <span className='text-xl font-semibold'>Admin Panel</span>
+          <span className='text-xl font-semibold'>ADMINISTERATUR</span>
         </div>
 
        

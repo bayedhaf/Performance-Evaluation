@@ -12,14 +12,14 @@ export default function AdminstractureNavBar() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navLinks = [
-    { name: 'Dashboard', href: '/dashboard' },
-    { name: 'Reports', href: '/reports' },
-    { name: 'Employees', href: '/employee' },
-    { name: 'Department', href: '/deparment' },
+    { name: 'Dashboard', href: '/admin/dashboard' },
+    { name: 'Reports', href: '/report' },
+    { name: 'Employees', href: '/employee/employee_list' },
+    { name: 'Department', href: '/department' },
   ]
 
   return (
-    <Card className='w-full bg-[#8D92EB] text-white shadow-md rounded-none px-6 py-4 z-50 relative'>
+    <Card className='w-full bg-[#8D92EB] text-white shadow-md rounded-none px-6 py-4 top-0 z-50 relative'>
       <nav className='flex items-center justify-between px-4 py-1 ml-14 mr-14'>
        
         <div className="flex items-center gap-2">

@@ -16,7 +16,7 @@ import {
 
 export default function AdminsterSideBar() {
   return (
-    <Card className="h-screen w-full sm:w-64 bg-white shadow-xl border-r flex flex-col ">
+    <Card className="h-screen w-full sm:w-64 bg-white shadow-xl border-r flex flex-col  mt-20">
      
       <CardHeader className="text-center border-b py-6 bg-[#8D92EB] text-white shadow-md">
         <div className="flex flex-col items-center justify-center">

@@ -2,6 +2,7 @@
 import Link from 'next/link'
 
 import { Card } from '@/components/ui/card'
+import EmployeeTaskSelector from '../employe-and-task/page'
 export default function Page() {
  
 
@@ -36,11 +37,9 @@ export default function Page() {
   <Card className="p-6 shadow-md bg-[#D9D9D9] w-full sm:w-auto rounded-lg">
     <h1 className="text-2xl font-bold text-black">Teams tasks</h1>
     <div className="flex flex-row  items-center justify-around gap-6">
-      <div className="bg-[#8D92EB] rounded-2xl  mt-2 text-white items-center text-center font-bold hover:underline hover:text-[#D9D9D9] px-4 py-2">
-        Select the employee name
-      </div>
-      <div className="bg-[#8D92EB]  rounded-2xl mt-2 text-white items-center text-center font-bold hover:underline hover:text-[#D9D9D9] px-4 py-2">
-        Select task type
+     
+      <div className="  rounded-2xl mt-2 text-white items-center text-center font-bold hover:underline hover:text-[#D9D9D9] px-4 py-2">
+       <EmployeeTaskSelector/>
       </div>
     </div>
   </Card>

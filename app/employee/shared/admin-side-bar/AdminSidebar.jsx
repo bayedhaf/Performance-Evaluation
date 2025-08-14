@@ -2,11 +2,11 @@
 
 import React from 'react'
 import Image from 'next/image'
-import { FaHome, FaFileSignature } from "react-icons/fa";
-import { BsMicrosoftTeams } from "react-icons/bs";
-import { SiGoogletasks } from "react-icons/si";
-import { MdMessage } from "react-icons/md";
-import { IoIosNotificationsOff } from "react-icons/io";
+import Link from 'next/link'
+import { FaFileSignature } from "react-icons/fa"
+import { BsMicrosoftTeams } from "react-icons/bs"
+import { SiGoogletasks } from "react-icons/si"
+
 import {
   Card,
   CardHeader,
@@ -16,8 +16,7 @@ import {
 
 export default function AdminSideBar() {
   return (
-    <Card className="h-screen w-full sm:w-64 bg-white shadow-xl border-r flex flex-col ">
-     
+    <Card className="h-screen w-full sm:w-64 bg-white shadow-xl border-r flex flex-col">
       <CardHeader className="text-center border-b py-6 bg-[#8D92EB] text-white shadow-md">
         <div className="flex flex-col items-center justify-center">
           <Image
@@ -33,19 +32,17 @@ export default function AdminSideBar() {
         </div>
       </CardHeader>
 
-   
       <CardContent className="flex flex-col gap-3 py-6 px-4 text-gray-700">
-        <SidebarItem icon={<FaHome />} label="Home" />
-        <SidebarItem icon={<BsMicrosoftTeams />} label="Teams" />
+        <Link href="teams" className="block">
+          <SidebarItem icon={<BsMicrosoftTeams />} label="Teams" />
+        </Link>
+
         <SidebarItem icon={<SiGoogletasks />} label="Tasks" />
-        <SidebarItem icon={<MdMessage />} label="Message" />
-        <SidebarItem icon={<IoIosNotificationsOff />} label="Notifications" />
         <SidebarItem icon={<FaFileSignature />} label="Files" />
       </CardContent>
     </Card>
   )
 }
-
 
 function SidebarItem({ icon, label }) {
   return (

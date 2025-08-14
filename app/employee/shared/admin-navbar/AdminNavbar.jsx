@@ -12,7 +12,7 @@ export default function AdminNavbar() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navLinks = [
-    { name: 'Home', href: '/' },
+    { name: 'Home', href: '/team-leader/dashboard' },
     { name: 'Notification', href: '/notification' },
     { name: 'Review', href: '/review' },
   ]

@@ -37,12 +37,9 @@ export const task=[
     },
   ]
 
-  export const user=[
-   { name:'BAYIA BALCHA',
-    date:'22/04/4333',
-    performance:'performance',
-    Rank:'exelence'
-     
-   }
-]
+export const users = [
+  { id: '1', name: 'Alice Johnson', performance: 'Self-Evaluation', rank: 5, data: '2025' },
+  { id: '2', name: 'Bob Smith', performance: 'Peer-Evaluation', rank: 4, data: '2025' },
+];
+
 

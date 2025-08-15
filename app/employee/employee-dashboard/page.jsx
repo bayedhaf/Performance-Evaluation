@@ -22,7 +22,7 @@ export default function Page() {
               <CardTitle className="text-xl font-semibold">Self Evaluation Task</CardTitle>
             </CardHeader>
             <CardContent>
-              <Link href="#" className="text-blue-700 underline hover:text-blue-900 transition">Find Users</Link>
+              <Link href="self-evaluation-form" className="text-blue-700 underline hover:text-blue-900 transition">self-evaluation</Link>
             </CardContent>
           </Card>
 
@@ -32,7 +32,7 @@ export default function Page() {
               <CardTitle className="text-xl font-semibold">Peer Evaluation Task</CardTitle>
             </CardHeader>
             <CardContent>
-              <Link href="#" className="text-blue-700 underline hover:text-blue-900 transition">Find Users</Link>
+              <Link href="peer-evaluation" className="text-blue-700 underline hover:text-blue-900 transition">Find Users</Link>
             </CardContent>
           </Card>
 

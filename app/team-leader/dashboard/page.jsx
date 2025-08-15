@@ -56,7 +56,7 @@ export default function Page() {
               <select
                 defaultValue=""
                 onChange={handleTaskChange}
-                className="w-full p-3 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 hover:border-indigo-400 transition"
+                className="w-full p-3 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:bg-[#8D92EB] hover:border-[#8D92EB] transition"
               >
                 <option value="" disabled>
                   Select Task type
@@ -75,13 +75,13 @@ export default function Page() {
             <div className="flex flex-col gap-4">
               <Link
                 href="/team-leader/peer-evaluation"
-                className="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl text-white font-semibold text-center px-4 py-3 shadow-md hover:from-indigo-600 hover:to-indigo-700 transition-all"
+                className="bg-[#8D92EB] rounded-xl text-white font-semibold text-center px-4 py-3 shadow-md hover:from-indigo-600 hover:to-indigo-700 transition-all"
               >
                 + Create Peer Tasks
               </Link>
               <Link
                 href="/team-leader/self-evaluation-form"
-                className="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl text-white font-semibold text-center px-4 py-3 shadow-md hover:from-indigo-600 hover:to-indigo-700 transition-all"
+                className="bg-[#8D92EB] rounded-xl text-white font-semibold text-center px-4 py-3 shadow-md hover:from-indigo-600 hover:to-indigo-700 transition-all"
               >
                 + Create Self-Evaluation Tasks
               </Link>

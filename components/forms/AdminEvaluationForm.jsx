@@ -8,11 +8,13 @@ export default function AdminEvaluationForm() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [taskData, setTaskData] = useState([]);
   const [newTask, setNewTask] = useState({ name: '', weight: '', rank: 0 });
+  const [loading, setLoading] = useState(false); 
+  const [message, setMessage] = useState('');
 
   const handleEmployeeChange = (e) => {
-    const empId = e.target.value;
-    const employee = users.find((u) => u.id.toString() === empId);
-    setSelectedEmployee(employee);
+    const empId = Number(e.target.value);
+    const employee = users.find((u) => u.id === empId);
+    setSelectedEmployee(employee || null);
   };
 
   const handleRankChange = (index, value) => {
@@ -22,15 +24,60 @@ export default function AdminEvaluationForm() {
   };
 
   const getScore = (rank, weight) => ((rank * weight) / 4) * 0.7;
-  const getRank = (rank) => rank;
-
-  const totalRank = taskData.reduce((acc, item) => acc + getRank(item.rank), 0);
+  const totalRank = taskData.reduce((acc, item) => acc + item.rank, 0);
   const total = taskData.reduce((acc, item) => acc + getScore(item.rank, item.weight), 0);
 
   const handleAddTask = () => {
     if (!newTask.name || !newTask.weight) return;
     setTaskData([...taskData, { ...newTask, id: Date.now() }]);
     setNewTask({ name: '', weight: '', rank: 0 });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!selectedEmployee) {
+      setMessage('Please select an employee before submitting.');
+      return;
+    }
+
+    if (taskData.length === 0) {
+      setMessage('Please add at least one task.');
+      return;
+    }
+
+    const payload = {
+      employeeId: selectedEmployee.id,
+      employeeName: selectedEmployee.name,
+      tasks: taskData.map((t) => ({ name: t.name, weight: t.weight, rank: t.rank })),
+      totalRank,
+      totalScore: total,
+      year: selectedEmployee.data,
+    };
+
+    setLoading(true);
+    setMessage('');
+
+    try {
+      const res = await fetch('/api/evaluations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error('Failed to submit evaluation');
+
+      const data = await res.json();
+      setMessage('Evaluation submitted successfully!');
+    
+      setSelectedEmployee(null);
+      setTaskData([]);
+    } catch (error) {
+      console.error(error);
+      setMessage('Error submitting evaluation.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -49,20 +96,22 @@ export default function AdminEvaluationForm() {
           </h1>
         </div>
 
-        <form className="bg-white/70 backdrop-blur-lg p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-200 space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white/70 backdrop-blur-lg p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-200 space-y-6"
+        >
+        
           <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0 items-start w-full max-w-2xl mx-auto">
             <div className="flex-1">
-              <label className="block text-gray-700 font-medium mb-2">
-                Select Employee:
-              </label>
+              <label className="block text-gray-700 font-medium mb-2">Select Employee:</label>
               <select
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 outline-none"
                 onChange={handleEmployeeChange}
+                value={selectedEmployee?.id || ''}
               >
-                <option value="" disabled>Choose an employee</option>
+                <option value="">Choose an employee</option>
                 {users.map((emp) => (
-                  <option key={emp.id} value={emp.id} 
-                  className='text-black'>
+                  <option key={emp.id} value={emp.id}>
                     {emp.name}
                   </option>
                 ))}
@@ -70,9 +119,7 @@ export default function AdminEvaluationForm() {
             </div>
 
             <div className="flex-1">
-              <label className="block text-gray-700 font-medium mb-2">
-                Task Value
-              </label>
+              <label className="block text-gray-700 font-medium mb-2">Task Value</label>
               <input
                 type="number"
                 placeholder="Enter task value"
@@ -81,23 +128,17 @@ export default function AdminEvaluationForm() {
             </div>
           </div>
 
+        
           {selectedEmployee && (
             <div className="bg-gray-50 rounded-lg px-4 py-3 flex flex-col sm:flex-row flex-wrap gap-3 text-sm font-medium text-gray-800 border border-gray-200">
-              <span>
-                <strong>Employer Name:</strong> {selectedEmployee.name}
-              </span>
-              <span>
-                <strong>Evaluation:</strong> {selectedEmployee.performance}
-              </span>
-              <span>
-                <strong>Rank:</strong> {selectedEmployee.rank}
-              </span>
-              <span>
-                <strong>Year:</strong> {selectedEmployee.data}
-              </span>
+              <span><strong>Employer Name:</strong> {selectedEmployee.name}</span>
+              <span><strong>Evaluation:</strong> {selectedEmployee.performance}</span>
+              <span><strong>Rank:</strong> {selectedEmployee.rank}</span>
+              <span><strong>Year:</strong> {selectedEmployee.data}</span>
             </div>
           )}
 
+        
           <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-md">
             <table className="min-w-full text-sm sm:text-base text-center">
               <thead className="bg-indigo-100">
@@ -105,17 +146,13 @@ export default function AdminEvaluationForm() {
                   <th className="px-3 py-2">No.</th>
                   <th className="px-3 py-2">Task Listed</th>
                   <th className="px-3 py-2">Task Division (100%)</th>
-                  <th colSpan={4} className="px-3 py-2">
-                    Task Division Out of 24
-                  </th>
+                  <th colSpan={4} className="px-3 py-2">Task Division Out of 24</th>
                   <th className="px-3 py-2">Result Out of 70%</th>
                 </tr>
                 <tr className="bg-indigo-50">
                   <th colSpan={3}></th>
                   {[1, 2, 3, 4].map((n) => (
-                    <th key={n} className="px-2 py-1">
-                      {n}
-                    </th>
+                    <th key={`rank-header-${n}`} className="px-2 py-1">{n}</th>
                   ))}
                   <th></th>
                 </tr>
@@ -127,7 +164,7 @@ export default function AdminEvaluationForm() {
                     <td className="border-t px-2 py-2 text-left">{item.name}</td>
                     <td className="border-t px-2 py-2">{item.weight}</td>
                     {[1, 2, 3, 4].map((num) => (
-                      <td key={num} className="border-t px-2 py-2">
+                      <td key={`rank-${item.id}-${num}`} className="border-t px-2 py-2">
                         <input
                           type="radio"
                           name={`rank-${i}`}
@@ -143,6 +180,8 @@ export default function AdminEvaluationForm() {
                     </td>
                   </tr>
                 ))}
+
+             
                 <tr>
                   <td className="border-t px-2 py-2">+</td>
                   <td className="border-t px-2 py-2">
@@ -187,12 +226,17 @@ export default function AdminEvaluationForm() {
             </div>
           </div>
 
+          
+          {message && <p className="text-center text-red-600 font-medium">{message}</p>}
           <div className="text-center">
             <button
               type="submit"
-              className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-8 py-3 rounded-lg shadow-lg hover:from-indigo-600 hover:to-indigo-700 transition-transform transform hover:scale-105"
+              disabled={loading}
+              className={`bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-8 py-3 rounded-lg shadow-lg hover:from-indigo-600 hover:to-indigo-700 transition-transform transform hover:scale-105 ${
+                loading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
-              Submit Evaluation
+              {loading ? 'Submitting...' : 'Submit Evaluation'}
             </button>
           </div>
         </form>

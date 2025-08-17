@@ -15,7 +15,7 @@ export default function PeerEvaluation() {
   useEffect(() => {
     async function fetchEmployees() {
       try {
-        const res = await fetch('/api/employees'); 
+        const res = await fetch('https://api.escuelajs.co/api/v1/users'); 
         const data = await res.json();
         if (res.ok) {
           setEmployees(data);
@@ -40,10 +40,10 @@ export default function PeerEvaluation() {
     if (!employee) return;
 
     try {
-      const res = await fetch(`/api/tasks?employeeId=${empId}`); // GET endpoint for tasks
+      const res = await fetch(`/api/tasks?employeeId=${empId}`);
       const data = await res.json();
       if (res.ok) {
-        // Initialize ranks to 0
+       
         setTaskData(data.map(t => ({ ...t, rank: 0 })));
       } else {
         setMessage(`❌ Failed to fetch tasks: ${data.message || 'Unknown error'}`);
@@ -53,7 +53,7 @@ export default function PeerEvaluation() {
     }
   };
 
-  // Score calculation
+
   const getScore = (rank, weight) => (rank * weight) / 4;
 
   const calculateTotals = (data) => {
@@ -70,7 +70,7 @@ export default function PeerEvaluation() {
     calculateTotals(updated);
   };
 
-  // Submit to backend
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedEmployee) {
@@ -90,7 +90,7 @@ export default function PeerEvaluation() {
         date: new Date().toISOString()
       };
 
-      const res = await fetch('/api/submit-evaluation', { // POST endpoint
+      const res = await fetch('/api/submit-evaluation', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -112,7 +112,7 @@ export default function PeerEvaluation() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-indigo-100 px-4 py-8 flex justify-center">
       <div className="w-full max-w-7xl">
-        {/* Header */}
+       
         <div className="flex flex-col items-center text-center space-y-4 mb-10">
           <Image
             src="/image/astuLogo.png"
@@ -126,12 +126,12 @@ export default function PeerEvaluation() {
           </h1>
         </div>
 
-        {/* Form */}
+      
         <form
           onSubmit={handleSubmit}
           className="bg-white/80 backdrop-blur-lg p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-200 space-y-6"
         >
-          {/* Employee Selection */}
+         
           <div className="mb-6">
             <label className="block mb-2 font-medium text-gray-700">Select Employee</label>
             <select
@@ -148,7 +148,7 @@ export default function PeerEvaluation() {
             </select>
           </div>
 
-          {/* Employee Info */}
+        
           {selectedEmployee && (
             <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 max-w-4xl mx-auto mb-6">
               {[
@@ -171,7 +171,7 @@ export default function PeerEvaluation() {
             </div>
           )}
 
-          {/* Task Table */}
+     
           {selectedEmployee && taskData.length > 0 && (
             <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-md">
               <table className="min-w-full text-sm sm:text-base text-center">
@@ -214,7 +214,7 @@ export default function PeerEvaluation() {
             </div>
           )}
 
-          {/* Totals */}
+        
           {selectedEmployee && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="bg-indigo-50 border border-indigo-200 rounded-lg px-4 py-3 font-medium text-gray-700">
@@ -226,10 +226,10 @@ export default function PeerEvaluation() {
             </div>
           )}
 
-          {/* Message */}
+        
           {message && <p className="text-center font-medium mt-4">{message}</p>}
 
-          {/* Submit */}
+       
           {selectedEmployee && (
             <div className="text-center">
               <button

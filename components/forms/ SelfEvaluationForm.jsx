@@ -8,6 +8,8 @@ export default function SelfEvaluationForm() {
   const [typeOfWork, setTypeOfWork] = useState('');
   const [rank, setRank] = useState('');
   const [tasks, setTasks] = useState([{ no: '', task: '', score: '' }]);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
   const handleTaskChange = (index, field, value) => {
     const updatedTasks = [...tasks];
@@ -23,16 +25,34 @@ export default function SelfEvaluationForm() {
     setTasks(tasks.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setMessage('');
     const formData = { typeOfWork, rank, year, tasks };
-    console.log('Submitted Data:', formData);
-    alert('Form submitted! Check console.');
+
+    try {
+      const res = await fetch('/api/self-evaluation/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (res.ok) {
+        setMessage('Form submitted successfully!');
+        setTypeOfWork('');
+        setRank('');
+        setTasks([{ no: '', task: '', score: '' }]);
+      } else {
+        setMessage('Failed to submit form.');
+      }
+    } catch (err) {
+      setMessage('Error submitting form.');
+    }
+    setLoading(false);
   };
 
   return (
     <div className="px-4 py-8 bg-gradient-to-br from-gray-50 via-white to-gray-100 min-h-screen">
-      
       <div className="flex flex-col items-center text-center space-y-4">
         <Image
           src="/image/astuLogo.png"
@@ -49,12 +69,10 @@ export default function SelfEvaluationForm() {
         </p>
       </div>
 
-    
       <form
         onSubmit={handleSubmit}
-        className=" mb-48 max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-lg space-y-6"
+        className="mb-48 max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-lg space-y-6"
       >
-       
         <div className="flex flex-col sm:flex-row gap-6 justify-center">
           <label className="flex flex-col text-sm font-semibold w-full">
             Type of Work Evaluation
@@ -82,7 +100,6 @@ export default function SelfEvaluationForm() {
 
         <p className="text-gray-700 font-medium">Year of Evaluation: {year}</p>
 
-    
         <div className="p-4 space-y-4 bg-gray-50 rounded-lg shadow-inner">
           <h2 className="text-lg font-semibold border-b pb-1 border-gray-300">
             Evaluation <span className="text-green-600 font-bold">5%</span>
@@ -160,13 +177,17 @@ export default function SelfEvaluationForm() {
           </button>
         </div>
 
-      
+        {message && (
+          <div className="text-center text-green-600 font-medium">{message}</div>
+        )}
+
         <div className="text-center">
           <button
             type="submit"
-            className="bg-green-600 text-white px-8 py-2 rounded-lg shadow hover:bg-green-700 transition"
+            disabled={loading}
+            className="bg-green-600 text-white px-8 py-2 rounded-lg shadow hover:bg-green-700 transition disabled:opacity-50"
           >
-            Send
+            {loading ? 'Sending...' : 'Send'}
           </button>
         </div>
       </form>

@@ -1,21 +1,41 @@
 'use client'
 import AdminNavbar from '@/app/employee/shared/admin-navbar/AdminNavbar'
-import { useState } from 'react'
-import { CalendarDays, Link } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { CalendarDays } from 'lucide-react'
+import Link from 'next/link'
 
-export default function EmployeeEvaluationBoard() {
-  const [evaluations] = useState([
-    { id: 1, name: 'John Doe', score: 'Excellent', date: '2025-08-10' },
-    { id: 2, name: 'Jane Smith', score: 'Good', date: '2025-08-15' },
-    { id: 3, name: 'Michael Lee', score: 'Needs Improvement', date: '2025-08-20' },
-  ])
+export default function CalendarPage() {
+  const [evaluations, setEvaluations] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchEvaluations() {
+      try {
+        const res = await fetch('https://dummyjson.com/c/d992-dbf8-451d-885b') // Replace with your real API endpoint
+        const data = await res.json()
+        setEvaluations(Array.isArray(data) ? data : [])
+      } catch (err) {
+        setEvaluations([])
+      }
+      setLoading(false)
+    }
+    fetchEvaluations()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <span className="text-gray-500">Loading...</span>
+      </div>
+    )
+  }
 
   return (
     <div>
       <AdminNavbar />
       <div className="p-6 bg-gray-50 min-h-screen">
         <h1 className="text-3xl font-bold mb-6 text-gray-800">
-          Employee Evaluation Board
+          Employee Evaluation Calendar
         </h1>
         <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-6">
           {evaluations.map((evalItem) => (

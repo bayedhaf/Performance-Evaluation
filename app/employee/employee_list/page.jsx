@@ -1,7 +1,7 @@
 import { Card } from '@/components/ui/card'
 import React from 'react'
 import AdminstractureNavBar from '../shared/admisteratur-navbar/NavbarAdmin'
-import { EmployeList } from '@/components/jsonfiletest/Employ'
+
 export default function EmployeeList() {
   return (
     <div className="min-h-screen bg-gray-50">

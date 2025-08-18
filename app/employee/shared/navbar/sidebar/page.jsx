@@ -14,7 +14,7 @@ export default function SideBar() {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const response = await fetch('https://api.escuelajs.co/api/v1/users/2');
+      const response = await fetch('https://dummyjson.com/c/cbc7-3ad9-4912-8739');
       const data = await response.json();
       setUser(data);
     };

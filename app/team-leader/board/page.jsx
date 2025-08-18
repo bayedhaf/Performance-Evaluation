@@ -1,19 +1,37 @@
 'use client'
 import AdminNavbar from '@/app/employee/shared/admin-navbar/AdminNavbar'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function EmployeeEvaluationBoard() {
-  const [evaluations] = useState([
-    { id: 1, name: 'Bayisa ', score: 'Excellent', date: '2025-08-10' },
-    { id: 2, name: 'Jane Tola', score: 'Good', date: '2025-08-08' },
-    { id: 3, name: 'Mimi dagim', score: 'Needs Improvement', date: '2025-08-05' },
-  ])
+  const [evaluations, setEvaluations] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchEvaluations() {
+      try {
+        const res = await fetch('https://dummyjson.com/c/c6b5-f43d-456c-9efe') // Replace with your real endpoint
+        const data = await res.json()
+        setEvaluations(Array.isArray(data) ? data : [])
+      } catch (err) {
+        setEvaluations([])
+      }
+      setLoading(false)
+    }
+    fetchEvaluations()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <span className="text-gray-500">Loading...</span>
+      </div>
+    )
+  }
 
   return (
     <div className="bg-gray-50 min-h-screen">
       <AdminNavbar />
       <div className="p-6 max-w-7xl mx-auto">
-    
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Employee Evaluation Board
         </h1>

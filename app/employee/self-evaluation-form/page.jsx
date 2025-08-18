@@ -12,13 +12,13 @@ export default function SelfEvaluation() {
 
   useEffect(() => {
     async function fetchData() {
-      
-      const userRes = await fetch('https://api.escuelajs.co/api/v1/users/2'); 
+      // Fetch user info endpoint)
+      const userRes = await fetch(' https://dummyjson.com/c/8171-a946-49e3-a1be');
       const userData = await userRes.json();
       setUser(userData);
 
-    
-      const taskRes = await fetch(`https://api.escuelajs.co/api/v1/users/${userData.id}/tasks`);
+      // Fetch tasks  endpoint)
+      const taskRes = await fetch('https://dummyjson.com/c/3958-97b1-4bbf-bf8c');
       let tasks = await taskRes.json();
       if (!Array.isArray(tasks)) {
         tasks = [];
@@ -29,7 +29,7 @@ export default function SelfEvaluation() {
     fetchData();
   }, []);
 
-   const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
@@ -66,7 +66,7 @@ export default function SelfEvaluation() {
 
   const calculateTotals = (data) => {
     const rankSum = data.reduce((sum, t) => sum + (t.rank || 0), 0);
-    const scoreSum = data.reduce((sum, t) => sum + getScore(t.rank, t.weight || 0), 0);
+    const scoreSum = data.reduce((sum, t) => sum + getScore(t.rank || 0, t.weight || 0), 0);
     setTotalRank(rankSum);
     setTotal(scoreSum);
   };
@@ -99,7 +99,6 @@ export default function SelfEvaluation() {
           onSubmit={handleSubmit}
           className="bg-white/80 backdrop-blur-lg p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-200 space-y-6"
         >
-       
           <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 max-w-4xl mx-auto">
             {[
               { label: 'Full Name', value: user.name },
@@ -120,7 +119,6 @@ export default function SelfEvaluation() {
             ))}
           </div>
 
-        
           <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-md">
             <table className="min-w-full text-sm sm:text-base text-center">
               <thead>

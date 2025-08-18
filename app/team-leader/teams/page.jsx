@@ -1,38 +1,47 @@
 'use client'
 
 import AdminNavbar from '@/app/employee/shared/admin-navbar/AdminNavbar'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function SingleTeam() {
-  const [team] = useState({
-    id: 1,
-    name: 'Software Development',
-    members: [
-      {
-        name: 'Ali  bon',
-        email: 'alice.johnson@example.com',
-        phone: '+1 (555) 123-4567',
-        status: 'Active',
-      },
-      {
-        name: 'Ezana Bona',
-        email: 'ethan.brown@example.com',
-        phone: '+1 (555) 234-5678',
-        status: 'Inactive',
-      },
-      {
-        name: 'Sophia slon',
-        email: 'sophia.wilson@example.com',
-        phone: '+1 (555) 345-6789',
-        status: 'Active',
-      },
-    ],
-  })
+  const [team, setTeam] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   const statusColors = {
     Active: 'bg-green-100 text-green-700',
     Inactive: 'bg-red-100 text-red-700',
     Pending: 'bg-yellow-100 text-yellow-700',
+  }
+
+  useEffect(() => {
+  
+    async function fetchTeam() {
+      try {
+        const res = await fetch('https://dummyjson.com/c/8825-d574-41fc-a967') //replace this
+        const data = await res.json()
+        setTeam(data)
+      } catch (err) {
+        setTeam(null)
+      }
+      setLoading(false)
+    }
+    fetchTeam()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center bg-gray-50">
+        <span className="text-gray-500">Loading...</span>
+      </div>
+    )
+  }
+
+  if (!team) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center bg-gray-50">
+        <span className="text-red-500">Failed to load team data.</span>
+      </div>
+    )
   }
 
   return (

@@ -17,7 +17,7 @@ export default function Page() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-white to-indigo-100">
-      <main className="flex-1 p-4 sm:p-8 space-y-10">
+      <main className="flex-1 p-4 sm:p-8 space-y-10 mb-32">
         
       
         <div className="max-w-2xl mx-auto">
@@ -80,7 +80,7 @@ export default function Page() {
                 + Create Peer Tasks
               </Link>
               <Link
-                href="/team-leader/self-evaluation-form"
+                href="/team-leader/self-evaluationform"
                 className="bg-[#8D92EB] rounded-xl text-white font-semibold text-center px-4 py-3 shadow-md hover:from-indigo-600 hover:to-indigo-700 transition-all"
               >
                 + Create Self-Evaluation Tasks

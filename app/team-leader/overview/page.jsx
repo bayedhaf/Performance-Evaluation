@@ -2,40 +2,72 @@
 import AdminNavbar from '@/app/employee/shared/admin-navbar/AdminNavbar'
 import { Calendar, Users, BarChart3, Award } from 'lucide-react'
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
 
 export default function OverviewPage() {
-  const stats = [
-    { title: 'Total Employees', value: 45, icon: Users, color: 'bg-blue-100 text-blue-700' },
-    { title: 'Evaluations Completed', value: 120, icon: Award, color: 'bg-green-100 text-green-700' },
-    { title: 'Upcoming Reviews', value: 8, icon: Calendar, color: 'bg-yellow-100 text-yellow-700' },
-    { title: 'Average Score', value: '85%', icon: BarChart3, color: 'bg-purple-100 text-purple-700' },
-  ]
+  const [stats, setStats] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch('https://dummyjson.com/c/d318-b05e-47fe-aef9') // Replace with your get endpoint
+        const data = await res.json()
+        setStats(Array.isArray(data) ? data : [])
+      } catch (err) {
+        setStats([])
+      }
+      setLoading(false)
+    }
+    fetchStats()
+  }, [])
+
+  const iconMap = {
+    Users: { icon: Users, href: '/team-leader/teams' },
+ 
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <span className="text-gray-500">Loading...</span>
+      </div>
+    )
+  }
 
   return (
     <div>
       <AdminNavbar />
       <div className="p-6 bg-gray-50 min-h-screen">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Dashboard Overview</h1>
-        
-      
+        <h1 className="text-3xl font-bold text-gray-800 mb-6 bg-gray-200 ">Dashboard Overview</h1>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, idx) => (
-            <div
-              key={idx}
-              className="bg-white rounded-xl shadow-md p-6 flex items-center space-x-4 hover:shadow-lg transition-shadow"
-            >
-              <div className={`p-3 rounded-full ${stat.color}`}>
-                <stat.icon size={24} />
+          {stats.map((stat, idx) => {
+            const IconObj = iconMap[stat.icon]
+            const Icon = IconObj?.icon
+          
+            const content = (
+              <div
+                className="bg-white rounded-xl shadow-md p-6 flex items-center space-x-4 hover:shadow-lg transition-shadow cursor-pointer"
+              >
+                <div className={`p-3 rounded-full ${stat.color}`}>
+                  {Icon && <Icon size={24} />}
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">{stat.title}</p>
+                  <h2 className="text-xl font-semibold">{stat.value}</h2>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-gray-500">{stat.title}</p>
-                <h2 className="text-xl font-semibold">{stat.value}</h2>
-              </div>
-            </div>
-          ))}
+            )
+            return IconObj?.href ? (
+              <Link key={idx} href={IconObj.href}>
+                {content}
+              </Link>
+            ) : (
+              <div key={idx}>{content}</div>
+            )
+          })}
         </div>
 
-      
         <div className="mt-10 grid md:grid-cols-3 gap-6">
           <Link
             href="/employee/evaluations"
@@ -47,7 +79,7 @@ export default function OverviewPage() {
           </Link>
 
           <Link
-            href="/employee/calendar"
+            href="calendar"
             className="bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow border text-center"
           >
             <Calendar className="mx-auto text-yellow-500 mb-3" size={40} />
@@ -56,7 +88,7 @@ export default function OverviewPage() {
           </Link>
 
           <Link
-            href="/employee/reports"
+            href="peer-and-self-report"
             className="bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow border text-center"
           >
             <BarChart3 className="mx-auto text-purple-500 mb-3" size={40} />

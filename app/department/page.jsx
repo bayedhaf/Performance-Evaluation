@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card'
 
 import AdminstractureNavBar from '../employee/shared/admisteratur-navbar/NavbarAdmin'
 
-import {departments} from '@/components/jsonfiletest/Department'
+
 
 export default function DepartmentList() {
 

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
-export default function AdminEvaluationForm() {
+export default function AdminEvaluationBehavioral() {
   const [users, setUsers] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [taskData, setTaskData] = useState([]);
@@ -37,7 +37,7 @@ export default function AdminEvaluationForm() {
     setTaskData(updatedTasks);
   };
 
-  const getScore = (rank, weight) => ((rank * weight) / 4) * 0.7;
+  const getScore = (rank, weight) => ((rank * weight) / 4) * 0.1;
   const totalRank = taskData.reduce((acc, item) => acc + (item.rank || 0), 0);
   const total = taskData.reduce((acc, item) => acc + getScore(item.rank || 0, item.weight || 0), 0);
 
@@ -147,8 +147,8 @@ export default function AdminEvaluationForm() {
                   <th className="px-3 py-2">No.</th>
                   <th className="px-3 py-2">Task Listed</th>
                   <th className="px-3 py-2">Task Division (100%)</th>
-                  <th colSpan={4} className="px-3 py-2">Task Division Out of 24</th>
-                  <th className="px-3 py-2">Result Out of 70%</th>
+                  <th colSpan={4} className="px-3 py-2">Task Division </th>
+                  <th className="px-3 py-2">Result Out of 10%</th>
                 </tr>
                 <tr className="bg-indigo-50">
                   <th colSpan={3}></th>

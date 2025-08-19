@@ -13,8 +13,7 @@ export default function AdminNavbar() {
 
   const navLinks = [
     { name: 'Home', href: '/team-leader/dashboard' },
-    { name: 'Notification', href: '/notification' },
-    { name: 'Review', href: '/review' },
+
   ]
 
   return (
@@ -29,11 +28,11 @@ export default function AdminNavbar() {
             width={50}
             alt='ASTU'
           />
-          <span className='text-xl font-semibold'>Admin Panel</span>
+          <span className='text-xl font-semibold'>Team Leader</span>
         </div>
 
        
-        <ul className='hidden md:flex gap-6 text-white'>
+        <ul className='hidden md:flex gap-6 float-right text-white'>
           {navLinks.map((link) => (
             <li key={link.href}>
               <Link href={link.href} className='hover:underline'>

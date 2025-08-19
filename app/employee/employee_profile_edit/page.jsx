@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import Navbar from '../shared/navbar/Navbar'
 
-export default function NewUserCreationForms() {
+export default function EditUserForm({ userId }) {
   const [step, setStep] = useState(1)
   const [form, setForm] = useState({
     fullName: '',
@@ -28,6 +29,43 @@ export default function NewUserCreationForms() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`/api/users/${userId}`)
+        if (res.ok) {
+          const data = await res.json()
+          setForm({
+            fullName: data.fullName || '',
+            gender: data.gender || '',
+            dob: data.dob || '',
+            email: data.email || '',
+            password: '',
+            phone: data.phone || '',
+            country: data.country || '',
+            region: data.region || '',
+            photo: null,
+            position: data.position || '',
+            level: data.level || '',
+            experience: data.experience || '',
+            field: data.field || '',
+            department: data.department || '',
+            instName: data.instName || '',
+            emgName: data.emgName || '',
+            emgRelation: data.emgRelation || '',
+            emgContact: data.emgContact || '',
+            emgJob: data.emgJob || '',
+          })
+        } else {
+          setMessage('❌ Failed to fetch user details.')
+        }
+      } catch (err) {
+        setMessage('❌ Error: ' + err.message)
+      }
+    }
+    if (userId) fetchUser()
+  }, [userId])
+
   const handleChange = (e) => {
     const { name, value, files } = e.target
     setForm((prev) => ({
@@ -48,38 +86,15 @@ export default function NewUserCreationForms() {
       Object.entries(form).forEach(([key, value]) => {
         if (value) formData.append(key, value)
       })
-      const res = await fetch('/api/new-user', {
-        method: 'POST',
+
+      const res = await fetch(`/api/users/${userId}`, {
+        method: 'PUT',
         body: formData,
       })
       if (res.ok) {
-        setMessage('✅ User registered successfully!')
-        setForm({
-          fullName: '',
-          gender: '',
-          dob: '',
-          email: '',
-          password: '',
-          phone: '',
-          country: '',
-          region: '',
-          photo: null,
-          position: '',
-          role: '',
-          level: '',
-          experience: '',
-
-          field: '',
-          department: '',
-          instName: '',
-          emgName: '',
-          emgRelation: '',
-          emgContact: '',
-          emgJob: '',
-        })
-        setStep(1)
+        setMessage('✅ User updated successfully!')
       } else {
-        setMessage('❌ Failed to register user.')
+        setMessage('❌ Failed to update user.')
       }
     } catch (err) {
       setMessage('❌ Error: ' + err.message)
@@ -88,26 +103,29 @@ export default function NewUserCreationForms() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex flex-col items-center justify-center px-6 py-10 font-sans">
-    
-      <header className="w-full max-w-4xl mb-8 text-center">
-        <h1 className="text-3xl font-bold text-indigo-800 drop-shadow-sm">ASTU Employee Portal</h1>
-        <p className="text-gray-500 mt-2">Employee Registration Form</p>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-indigo-100 flex flex-col items-center px-0 py-0 font-sans">
+      <Navbar className="fixed top-0 left-0 w-full z-50" />
+
+      <header className="w-full mt-20 max-w-4xl mb-10 text-center">
+        <h1 className="text-4xl font-extrabold text-indigo-700 tracking-tight">
+          ASTU Employee Portal
+        </h1>
+        <p className="text-gray-500 mt-2">Update your employee details below</p>
       </header>
 
-   
-      <div className="w-full max-w-4xl flex items-center justify-between mb-6">
+    
+      <div className="w-full max-w-3xl flex items-center justify-between mb-8">
         {[1, 2, 3].map((s) => (
           <div key={s} className="flex-1 flex items-center">
             <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white 
-                ${step >= s ? 'bg-indigo-600' : 'bg-gray-300'}`}
+              className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-white shadow-md transition 
+                ${step >= s ? 'bg-indigo-600 scale-105' : 'bg-gray-300'}`}
             >
               {s}
             </div>
             {s < 3 && (
               <div
-                className={`flex-1 h-1 mx-2 rounded ${
+                className={`flex-1 h-1 mx-2 rounded transition ${
                   step > s ? 'bg-indigo-600' : 'bg-gray-300'
                 }`}
               />
@@ -119,12 +137,12 @@ export default function NewUserCreationForms() {
    
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-4xl bg-white p-8 rounded-2xl shadow-lg border border-gray-200"
+        className="w-full mb-48 max-w-3xl bg-white/80 backdrop-blur-md p-10 rounded-2xl shadow-xl border border-gray-100"
         encType="multipart/form-data"
+        
       >
-      
         {step === 1 && (
-          <fieldset className="space-y-5">
+          <fieldset className="space-y-6">
             <legend className="font-semibold text-lg text-gray-800 mb-4">
               Personal Information
             </legend>
@@ -132,7 +150,7 @@ export default function NewUserCreationForms() {
               { label: 'Full Name', name: 'fullName', type: 'text' },
               { label: 'Date of Birth', name: 'dob', type: 'date' },
               { label: 'Email Address', name: 'email', type: 'email' },
-              { label: 'Password', name: 'password', type: 'password' },
+              { label: 'Password (leave blank if unchanged)', name: 'password', type: 'password' },
               { label: 'Phone No.', name: 'phone', type: 'tel' },
               { label: 'Country', name: 'country', type: 'text' },
               { label: 'Region/State', name: 'region', type: 'text' },
@@ -144,19 +162,19 @@ export default function NewUserCreationForms() {
                   name={field.name}
                   value={form[field.name]}
                   onChange={handleChange}
-                  className="mt-1 px-4 py-2 w-full border border-gray-300 rounded-lg bg-white text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none"
-                  required
+                  className="mt-1 px-4 py-3 w-full border border-gray-200 rounded-xl bg-white text-gray-800 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition"
+                  required={field.name !== 'password'}
                 />
               </label>
             ))}
-            
+
             <label className="block">
               <span className="font-medium text-gray-700">Gender</span>
               <select
                 name="gender"
                 value={form.gender}
                 onChange={handleChange}
-                className="mt-1 px-4 py-2 w-full border border-gray-300 rounded-lg bg-white text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none"
+                className="mt-1 px-4 py-3 w-full border border-gray-200 rounded-xl bg-white text-gray-800 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition"
                 required
               >
                 <option value="">Select gender</option>
@@ -165,27 +183,26 @@ export default function NewUserCreationForms() {
                 <option>Other</option>
               </select>
             </label>
-          
+
             <label className="block">
-              <span className="font-medium text-gray-700">Photo</span>
+              <span className="font-medium text-gray-700">Update Photo</span>
               <input
                 type="file"
                 name="photo"
                 accept="image/*"
                 onChange={handleChange}
-                className="mt-1 w-full text-sm text-gray-600 border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="mt-1 w-full text-sm text-gray-600 border border-gray-200 rounded-xl file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               />
             </label>
           </fieldset>
         )}
 
-       
         {step === 2 && (
-          <fieldset className="space-y-5">
+          <fieldset className="space-y-6">
             <legend className="font-semibold text-lg text-gray-800 mb-4">
               Education Background
             </legend>
-            {[ { label: 'Role', name: 'role' },
+            {[
               { label: 'Position', name: 'position' },
               { label: 'Level', name: 'level' },
               { label: 'Experience', name: 'experience' },
@@ -200,7 +217,7 @@ export default function NewUserCreationForms() {
                   name={field.name}
                   value={form[field.name]}
                   onChange={handleChange}
-                  className="mt-1 px-4 py-2 w-full border border-gray-300 rounded-lg bg-white text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none"
+                  className="mt-1 px-4 py-3 w-full border border-gray-200 rounded-xl bg-white text-gray-800 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition"
                   required
                 />
               </label>
@@ -208,9 +225,8 @@ export default function NewUserCreationForms() {
           </fieldset>
         )}
 
-     
         {step === 3 && (
-          <fieldset className="space-y-5">
+          <fieldset className="space-y-6">
             <legend className="font-semibold text-lg text-gray-800 mb-4">
               Emergency Contact Info
             </legend>
@@ -227,7 +243,7 @@ export default function NewUserCreationForms() {
                   name={field.name}
                   value={form[field.name]}
                   onChange={handleChange}
-                  className="mt-1 px-4 py-2 w-full border border-gray-300 rounded-lg bg-white text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none"
+                  className="mt-1 px-4 py-3 w-full border border-gray-200 rounded-xl bg-white text-gray-800 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition"
                   required
                 />
               </label>
@@ -235,13 +251,13 @@ export default function NewUserCreationForms() {
           </fieldset>
         )}
 
-      
-        <div className="flex justify-between mt-8">
+        {/* Buttons */}
+        <div className="flex justify-between mt-10">
           {step > 1 && (
             <button
               type="button"
               onClick={prevStep}
-              className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition shadow-sm"
             >
               Back
             </button>
@@ -250,7 +266,7 @@ export default function NewUserCreationForms() {
             <button
               type="button"
               onClick={nextStep}
-              className="ml-auto px-6 py-2 bg-indigo-4 text-white rounded-lg hover:bg-indigo-700 transition"
+              className="ml-auto px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition shadow-md"
             >
               Next
             </button>
@@ -258,17 +274,17 @@ export default function NewUserCreationForms() {
             <button
               type="submit"
               disabled={loading}
-              className="ml-auto px-6 py-2 bg-gradient-to-r from-indigo-600 to-indigo-300 text-white rounded-lg font-semibold shadow-md hover:shadow-xl hover:scale-[1.02] transition disabled:opacity-60"
+              className="ml-auto px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-400 text-white rounded-xl font-semibold shadow-md hover:shadow-xl hover:scale-[1.02] transition disabled:opacity-60"
             >
-              {loading ? 'Submitting...' : 'Submit'}
+              {loading ? 'Updating...' : 'Update'}
             </button>
           )}
         </div>
 
-      
+        {/* Message */}
         {message && (
           <p
-            className={`mt-4 text-center font-medium ${
+            className={`mt-6 text-center font-medium ${
               message.startsWith('✅') ? 'text-green-600' : 'text-red-600'
             }`}
           >

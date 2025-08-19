@@ -1,115 +1,156 @@
-'use client'
+'use client';
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
-export default function PerformanceEvaluationResualt() {
+export default function PerformanceEvaluationResult() {
+  const [evaluation, setEvaluation] = useState(null);
+
+  useEffect(() => {
+    async function fetchEvaluation() {
+      try {
+        const res = await fetch("https://dummyjson.com/c/8ea0-21a5-4f8f-9c46"); 
+        const data = await res.json();
+        setEvaluation(data);
+      } catch (err) {
+        console.error("Error fetching evaluation:", err);
+      }
+    }
+    fetchEvaluation();
+  }, []);
+
+  const handleDownloadPDF = async () => {
+    const element = document.getElementById("evaluation-form");
+    const canvas = await html2canvas(element, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save("performance_evaluation.pdf");
+  };
+
+  if (!evaluation) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen mb-20 bg-gray-100 flex justify-center py-8">
-      <form 
-        action="/api/evaluations" 
-        method="GET" 
-        className="bg-white w-full mb-15 max-w-5xl border border-gray-400 rounded-lg shadow-md"
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
+     
+      <div
+        id="evaluation-form"
+        className="bg-white w-full max-w-5xl border border-gray-300 rounded-2xl shadow-lg overflow-hidden"
       >
-        
-        <div className="bg-indigo-400  text-white text-center p-4 border-b border-gray-400 rounded-t-lg">
-          <Image src="/image/astuLogo.png" 
-          height={100} width={100}
-          alt="ASTU Logo" className="mx-auto w-20 h-20 mb-2 rounded-full" />
-          <h1 className="text-xl font-bold">ADAMA SCIENCE AND TECHNOLOGY UNIVERSITY</h1>
+      
+        <div className="bg-indigo-400 text-white text-center py-6 px-4 relative">
+          <Image
+            src="/image/astuLogo.png"
+            height={100}
+            width={100}
+            alt="ASTU Logo"
+            className="mx-auto w-24 h-24 rounded-full mb-2 border-4 border-white shadow-md"
+          />
+          <h1 className="text-2xl font-bold mb-1">ADAMA SCIENCE AND TECHNOLOGY UNIVERSITY</h1>
           <p className="text-sm">1888 &nbsp; phone:0916656489 &nbsp; fax:+234890 747 &nbsp; email: example@f.com</p>
-          <p className="text-xs italic">Vice president for strategic management and international relations</p>
+          <p className="text-xs italic mt-1">Vice president for strategic management and international relations</p>
+        </div>
+
+     
+        <div className="grid grid-cols-2 bg-gray-200 border-b border-gray-300">
+          <div className="p-3 text-center font-semibold border-r border-gray-300">Employee Evaluation Summary</div>
+          <div className="p-3 text-center font-semibold">Evaluation Term: Half Year</div>
         </div>
 
       
-        <div className="grid grid-cols-2 border-b border-gray-400">
-          <div className="bg-gray-200 p-2 text-center font-semibold">
-            The employee evaluation summary
+        <div className="p-6 grid grid-cols-2 gap-6 border-b border-gray-300">
+          <div>
+            <label className="block mb-1 font-medium text-gray-700">Employee Name:</label>
+            <p className="border w-full p-2 rounded h-10">{evaluation.name}</p>
           </div>
-          <div className="bg-gray-200 p-2 text-center font-semibold">
-            Evaluation term half year
+          <div>
+            <label className="block mb-1 font-medium text-gray-700">Type of Work:</label>
+            <p className="border w-full p-2 rounded h-10">{evaluation.work}</p>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium text-gray-700">Job Type:</label>
+            <p className="border w-full p-2 rounded h-10">{evaluation.job}</p>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium text-gray-700">Year of Evaluation:</label>
+            <p className="border w-full p-2 rounded h-10">{evaluation.year}</p>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium text-gray-700">Evaluation Leader:</label>
+            <p className="border w-full p-2 rounded h-10">{evaluation.leader}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block mb-1 font-medium text-gray-700">Sign:</label>
+              <p className="border w-full p-2 rounded h-10">{evaluation.leaderSign}</p>
+            </div>
+            <div>
+              <label className="block mb-1 font-medium text-gray-700">Date:</label>
+              <p className="border w-full p-2 rounded h-10">{evaluation.leaderDate}</p>
+            </div>
           </div>
         </div>
 
-     
-        <div className="p-4 border-b border-gray-400 grid grid-cols-2 gap-4">
+      
+        <div className="p-6 grid grid-cols-2 gap-6 border-b border-gray-300">
           <div>
-            <label className="block mb-1 font-medium">Employee Name:</label>
-             <p  className="border w-full p-2 rounded h-10">bayisa balcha</p> 
+            <label className="block mb-1 font-medium text-gray-700">Leader Mark (70%):</label>
+            <p className="border w-full p-2 rounded h-10">{evaluation.leaderMark}</p>
           </div>
           <div>
-            <label className="block mb-1 font-medium">Type of work:</label>
-           <p  className="border w-full p-2 rounded h-10">development</p> 
-           
+            <label className="block mb-1 font-medium text-gray-700">Self Mark (5%):</label>
+            <p className="border w-full p-2 rounded h-10">{evaluation.selfMark}</p>
           </div>
           <div>
-            <label className="block mb-1 font-medium">Job type:</label>
-             <p  className="border w-full p-2 rounded h-10">software</p> 
+            <label className="block mb-1 font-medium text-gray-700">Peer Mark (15%):</label>
+            <p className="border w-full p-2 rounded h-10">{evaluation.peerMark}</p>
           </div>
           <div>
-            <label className="block mb-1 font-medium">Year of evaluation:</label>
-            <p  className="border w-full p-2 rounded h-10">2022</p> 
+            <label className="block mb-1 font-medium text-gray-700">Other Mark (10%):</label>
+            <p className="border w-full p-2 rounded h-10">{evaluation.otherMark}</p>
           </div>
-          <div>
-            <label className="block mb-1 font-medium">Evaluation leader:</label>
-             <p  className="border w-full p-2 rounded h-10">Engineer B</p> 
-          </div>
-          <div className="grid grid-cols-2 gap-2">
+        </div>
+
+       
+        <div className="p-6">
+          <label className="block mb-1 font-medium text-gray-700">Evaluation Summary:</label>
+          <p className="border w-full p-2 rounded h-10">{evaluation.summary}</p>
+          <div className="grid grid-cols-3 gap-6 mt-4">
             <div>
-              <label className="block mb-1 font-medium">Sign:</label>
-             <p  className="border w-full p-2 rounded h-10">bayisa</p> 
+              <label className="block mb-1 font-medium text-gray-700">Approver Name:</label>
+              <p className="border w-full p-2 rounded h-10">{evaluation.approver}</p>
             </div>
             <div>
-              <label className="block mb-1 font-medium">Date:</label>
-              <p  className="border w-full p-2 rounded h-10">8/10/2022</p> 
+              <label className="block mb-1 font-medium text-gray-700">Sign:</label>
+              <p className="border w-full p-2 rounded h-10">{evaluation.approverSign}</p>
+            </div>
+            <div>
+              <label className="block mb-1 font-medium text-gray-700">Date:</label>
+              <p className="border w-full p-2 rounded h-10">{evaluation.approverDate}</p>
             </div>
           </div>
         </div>
+      </div>
 
    
-        <div className="p-4 border-b border-gray-400 grid grid-cols-2 gap-4">
-          <div>
-            <label className="block mb-1 font-medium">Leader mark (70%):</label>
-              <p  className="border w-full p-2 rounded h-10">65</p> 
-          </div>
-          <div>
-            <label className="block mb-1 font-medium">Self mark (5%):</label>
-             <p  className="border w-full p-2 rounded h-10">4.5</p> 
-          </div>
-          <div>
-            <label className="block mb-1 font-medium">Leader mark (10%):</label>
-            <p  className="border w-full p-2 rounded h-10">9</p> 
-          </div>
-          <div>
-            <label className="block mb-1 font-medium">Peer mark (15%):</label>
-            <p  className="border w-full p-2 rounded h-10">14.3</p> 
-          </div>
-        </div>
-
-    
-        <div className="p-4">
-          <label className="block mb-1 font-medium">Evaluation summary:</label>
-            <p  className="border w-full p-2 rounded h-10">
-              good</p> 
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <div>
-              <label className="block mb-1 font-medium">Approver Name:</label>
-                           <p  className="border w-full p-2 rounded h-10">Dr. D</p> 
-            </div>
-            <div>
-              <label className="block mb-1 font-medium">Sign:</label>
-                          <p  className="border w-full p-2 rounded h-10">D olin</p> 
-            </div>
-            <div>
-              <label className="block mb-1 font-medium">Date:</label>
-                          <p  className="border w-full p-2 rounded h-10">8/10/2022</p> 
-            </div>
-          </div>
-        </div>
-
-     
-        <div className="p-4 text-center border-t border-gray-400">
-       
-        </div>
-      </form>
+      <div className="mt-8">
+        <button
+          onClick={handleDownloadPDF}
+          className="px-8 mb-28 py-3 bg-gradient-to-r from-indigo-600 to-indigo-400 text-white font-semibold rounded-lg shadow-lg hover:scale-105 hover:shadow-xl transition-transform duration-200"
+        >
+          Download PDF
+        </button>
+      </div>
     </div>
   );
 }

@@ -8,26 +8,31 @@ import {
 } from '@/components/ui/card'
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default function SideBar() {
-  const [User, setUser] = useState(null);
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const response = await fetch('https://dummyjson.com/c/cbc7-3ad9-4912-8739');
-      const data = await response.json();
-      setUser(data);
-    };
+      try {
+        const response = await fetch('https://dummyjson.com/users/1') // ✅ example API
+        const data = await response.json()
+        setUser(data)
+      } catch (error) {
+        console.error('Error fetching user:', error)
+      }
+    }
 
-    fetchUserData();
-  }, []);
+    fetchUserData()
+  }, [])
 
-  if (!User) {
+  if (!user) {
     return (
       <Card className="h-screen w-full sm:w-64 pt-6 bg-white shadow-xl border-r flex flex-col items-center justify-center">
         <span className="text-gray-500">Loading...</span>
       </Card>
-    );
+    )
   }
 
   return (
@@ -35,7 +40,7 @@ export default function SideBar() {
       <CardHeader className="text-center border-b py-6 bg-[#8D92EB] text-white shadow-md">
         <div className="flex flex-col items-center">
           <Image
-            src={User?.avatar|| '/default-profile.png'}
+            src={user.image || '/default-profile.png'} // ✅ matches dummyjson data
             alt="Profile"
             width={80}
             height={80}
@@ -43,32 +48,35 @@ export default function SideBar() {
             className="rounded-full object-cover mb-2 shadow-md"
           />
           <CardTitle className="text-white text-lg font-semibold tracking-wide">
-            <span className="font-semibold text-black">Full Name:</span> {User.name}
+            <span className="font-semibold text-black">Full Name:</span> {user.firstName} {user.lastName}
           </CardTitle>
         </div>
       </CardHeader>
 
       <CardContent className="p-4 space-y-4 text-sm text-gray-800">
+        <Link className="text-blue-700 hover:underline" href="/employee/employee_profile_edit">
+          Edit Profile
+        </Link>
         <div className="flex justify-between">
           <span className="font-semibold text-gray-600">Department:</span>
-          <span>{User.department}</span>
+          <span>{user.company?.department}</span>
         </div>
         <div className="flex justify-between">
           <span className="font-semibold text-gray-600">Email:</span>
-          <span className="truncate">{User.email}</span>
+          <span className="truncate">{user.email}</span>
         </div>
         <div className="flex justify-between">
           <span className="font-semibold text-gray-600">Phone:</span>
-          <span>{User.phone}</span>
+          <span>{user.phone}</span>
         </div>
         <div className="flex justify-between">
           <span className="font-semibold text-gray-600">City:</span>
-          <span>{User.address?.city}</span>
+          <span>{user.address?.city}</span>
         </div>
         <div className="flex justify-between">
           <span className="font-semibold text-gray-600">Status:</span>
           <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700 font-medium">
-            {User.status}
+            Active
           </span>
         </div>
       </CardContent>

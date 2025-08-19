@@ -7,7 +7,7 @@ import { Users, UserPlus, Settings, BarChart3 } from 'lucide-react'
 export default function AdminDashboard() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 flex flex-col items-center px-6 py-12">
-      {/* Title */}
+      
       <div className="mb-10 text-center">
         <h1 className="text-4xl font-extrabold text-indigo-800 drop-shadow-sm">
           Dashboard Overview
@@ -17,7 +17,7 @@ export default function AdminDashboard() {
         </p>
       </div>
 
-      {/* Intro Section */}
+    
       <section className="w-full max-w-6xl bg-white/70 backdrop-blur-md rounded-3xl border border-indigo-100 p-10 shadow-lg mb-12">
         <div className="text-center">
           <p className="text-lg text-gray-700 leading-relaxed">
@@ -27,9 +27,9 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      {/* Cards Section */}
+     
       <section className="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {/* Card 1 */}
+      
         <Link
           href="/admin/dashboard/newusers"
           className="group flex flex-col items-center justify-center bg-white/80 backdrop-blur-lg border border-indigo-200 rounded-2xl p-8 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
@@ -43,9 +43,9 @@ export default function AdminDashboard() {
           </p>
         </Link>
 
-        {/* Card 2 */}
+        
         <Link
-          href="/admin/dashboard/manage-users"
+          href="/employee/employee_list"
           className="group flex flex-col items-center justify-center bg-white/80 backdrop-blur-lg border border-green-200 rounded-2xl p-8 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
         >
           <div className="w-14 h-14 flex items-center justify-center rounded-full bg-green-100 group-hover:bg-green-200 transition">
@@ -57,9 +57,8 @@ export default function AdminDashboard() {
           </p>
         </Link>
 
-        {/* Card 3 */}
         <Link
-          href="/admin/dashboard/reports"
+          href="/report"
           className="group flex flex-col items-center justify-center bg-white/80 backdrop-blur-lg border border-yellow-200 rounded-2xl p-8 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
         >
           <div className="w-14 h-14 flex items-center justify-center rounded-full bg-yellow-100 group-hover:bg-yellow-200 transition">
@@ -71,9 +70,9 @@ export default function AdminDashboard() {
           </p>
         </Link>
 
-        {/* Card 4 */}
+       
         <Link
-          href="/admin/dashboard/settings"
+          href="/admin/setting"
           className="group flex flex-col items-center justify-center bg-white/80 backdrop-blur-lg border border-purple-200 rounded-2xl p-8 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
         >
           <div className="w-14 h-14 flex items-center justify-center rounded-full bg-purple-100 group-hover:bg-purple-200 transition">

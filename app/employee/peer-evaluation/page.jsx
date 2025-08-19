@@ -11,54 +11,57 @@ export default function PeerEvaluation() {
   const [loading, setLoading] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
- 
+  // Fetch employees from DB
   useEffect(() => {
     async function fetchEmployees() {
+      setLoading(true);
       try {
-        const res = await fetch('https://api.escuelajs.co/api/v1/users'); 
+        const res = await fetch('https://dummyjson.com/c/ec54-cc72-4bec-8f36'); // Use your get API endpoint
         const data = await res.json();
         if (res.ok) {
-          setEmployees(data);
+          setEmployees(Array.isArray(data) ? data : []);
         } else {
           setMessage(`❌ Failed to fetch employees: ${data.message || 'Unknown error'}`);
         }
       } catch (err) {
         setMessage(`❌ Error fetching employees: ${err.message}`);
       }
+      setLoading(false);
     }
     fetchEmployees();
   }, []);
 
- 
+  // Handle employee selection and fetch tasks
   const handleEmployeeChange = async (e) => {
     const empId = parseInt(e.target.value);
     const employee = employees.find(emp => emp.id === empId);
     setSelectedEmployee(employee || null);
     setTotal(0);
     setTotalRank(0);
+    setTaskData([]);
 
     if (!employee) return;
 
+    setLoading(true);
     try {
-      const res = await fetch(`/api/tasks?employeeId=${empId}`);
+      const res = await fetch(`https://dummyjson.com/c/0b86-a366-4292-94b3`); // Use your get API endpoint
       const data = await res.json();
       if (res.ok) {
-       
-        setTaskData(data.map(t => ({ ...t, rank: 0 })));
+        setTaskData(Array.isArray(data) ? data.map(t => ({ ...t, rank: 0 })) : []);
       } else {
         setMessage(`❌ Failed to fetch tasks: ${data.message || 'Unknown error'}`);
       }
     } catch (err) {
       setMessage(`❌ Error fetching tasks: ${err.message}`);
     }
+    setLoading(false);
   };
 
-
-  const getScore = (rank, weight) => (rank * weight) / 4;
+  const getScore = (rank, weight) => (((rank * weight) / 4)*0.15);
 
   const calculateTotals = (data) => {
     const rankSum = data.reduce((sum, t) => sum + (t.rank || 0), 0);
-    const scoreSum = data.reduce((sum, t) => sum + getScore(t.rank, t.weight || 0), 0);
+    const scoreSum = data.reduce((sum, t) => sum + getScore(t.rank || 0, t.weight || 0), 0);
     setTotalRank(rankSum);
     setTotal(scoreSum);
   };
@@ -69,7 +72,6 @@ export default function PeerEvaluation() {
     setTaskData(updated);
     calculateTotals(updated);
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -90,7 +92,7 @@ export default function PeerEvaluation() {
         date: new Date().toISOString()
       };
 
-      const res = await fetch('/api/submit-evaluation', { 
+      const res = await fetch('/api/submit-evaluation', {//post end point
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -112,7 +114,6 @@ export default function PeerEvaluation() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-indigo-100 px-4 py-8 flex justify-center">
       <div className="w-full max-w-7xl">
-       
         <div className="flex flex-col items-center text-center space-y-4 mb-10">
           <Image
             src="/image/astuLogo.png"
@@ -126,18 +127,17 @@ export default function PeerEvaluation() {
           </h1>
         </div>
 
-      
         <form
           onSubmit={handleSubmit}
           className="bg-white/80 backdrop-blur-lg p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-200 space-y-6"
         >
-         
           <div className="mb-6">
             <label className="block mb-2 font-medium text-gray-700">Select Employee</label>
             <select
               onChange={handleEmployeeChange}
               value={selectedEmployee?.id || ''}
               className="border p-2 rounded w-full"
+              disabled={loading}
             >
               <option value="">-- Choose Employee --</option>
               {employees.map(emp => (
@@ -148,7 +148,6 @@ export default function PeerEvaluation() {
             </select>
           </div>
 
-        
           {selectedEmployee && (
             <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 max-w-4xl mx-auto mb-6">
               {[
@@ -171,7 +170,6 @@ export default function PeerEvaluation() {
             </div>
           )}
 
-     
           {selectedEmployee && taskData.length > 0 && (
             <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-md">
               <table className="min-w-full text-sm sm:text-base text-center">
@@ -201,6 +199,7 @@ export default function PeerEvaluation() {
                             checked={item.rank === num}
                             onChange={() => handleRankChange(i, num)}
                             className="cursor-pointer accent-indigo-500"
+                            disabled={loading}
                           />
                         </td>
                       ))}
@@ -214,7 +213,6 @@ export default function PeerEvaluation() {
             </div>
           )}
 
-        
           {selectedEmployee && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="bg-indigo-50 border border-indigo-200 rounded-lg px-4 py-3 font-medium text-gray-700">
@@ -226,10 +224,8 @@ export default function PeerEvaluation() {
             </div>
           )}
 
-        
           {message && <p className="text-center font-medium mt-4">{message}</p>}
 
-       
           {selectedEmployee && (
             <div className="text-center">
               <button

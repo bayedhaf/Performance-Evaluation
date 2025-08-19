@@ -13,8 +13,8 @@ import React from 'react'
 export default function Page() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center px-4">
-      <main className="w-full max-w-7xl">
-        <h1 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-10">
+      <main className="w-full max-w-7xl mb-30">
+        <h1 className="text-3xl md:text-4xl mt-0 font-bold text-center text-gray-800 mb-10 bg-gray-200">
           Evaluation Dashboard
         </h1>
 
@@ -24,7 +24,7 @@ export default function Page() {
         
           <Card className="group bg-white text-gray-800 rounded-2xl shadow-md hover:shadow-2xl hover:scale-105 transform transition-all duration-300 p-6 cursor-pointer">
             <CardHeader>
-              <CardTitle className="text-lg md:text-xl font-semibold">
+              <CardTitle className="text-lg md:text-xl font-semibold ">
                 Self Evaluation Task
               </CardTitle>
             </CardHeader>

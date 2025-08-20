@@ -11,18 +11,13 @@ export default function PeerEvaluation() {
   const [loading, setLoading] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
-  // Fetch employees from DB
   useEffect(() => {
     async function fetchEmployees() {
       setLoading(true);
       try {
-        const res = await fetch('https://dummyjson.com/c/ec54-cc72-4bec-8f36'); // Use your get API endpoint
+        const res = await fetch('/api/team/members');
         const data = await res.json();
-        if (res.ok) {
-          setEmployees(Array.isArray(data) ? data : []);
-        } else {
-          setMessage(`❌ Failed to fetch employees: ${data.message || 'Unknown error'}`);
-        }
+        setEmployees(Array.isArray(data.users) ? data.users : []);
       } catch (err) {
         setMessage(`❌ Error fetching employees: ${err.message}`);
       }
@@ -31,10 +26,9 @@ export default function PeerEvaluation() {
     fetchEmployees();
   }, []);
 
-  // Handle employee selection and fetch tasks
   const handleEmployeeChange = async (e) => {
-    const empId = parseInt(e.target.value);
-    const employee = employees.find(emp => emp.id === empId);
+    const empId = e.target.value;
+    const employee = employees.find(emp => (emp._id || emp.id) === empId);
     setSelectedEmployee(employee || null);
     setTotal(0);
     setTotalRank(0);
@@ -44,12 +38,20 @@ export default function PeerEvaluation() {
 
     setLoading(true);
     try {
-      const res = await fetch(`https://dummyjson.com/c/0b86-a366-4292-94b3`); // Use your get API endpoint
-      const data = await res.json();
+      const res = await fetch(`/api/tasks?assignedTo=${encodeURIComponent(empId)}&category=peer_evaluation`);
+      const tasks = await res.json();
       if (res.ok) {
-        setTaskData(Array.isArray(data) ? data.map(t => ({ ...t, rank: 0 })) : []);
+        const rows = Array.isArray(tasks)
+          ? tasks.flatMap(t => (t.evaluationCriteria || []).map((c, idx) => ({
+              id: `${t._id}-${idx}`,
+              name: c.criterion,
+              weight: c.weight,
+              rank: 0,
+            })))
+          : [];
+        setTaskData(rows);
       } else {
-        setMessage(`❌ Failed to fetch tasks: ${data.message || 'Unknown error'}`);
+        setMessage('❌ Failed to fetch tasks');
       }
     } catch (err) {
       setMessage(`❌ Error fetching tasks: ${err.message}`);
@@ -85,14 +87,14 @@ export default function PeerEvaluation() {
 
     try {
       const payload = {
-        employee: selectedEmployee,
+        evaluateeId: selectedEmployee._id || selectedEmployee.id,
         tasks: taskData,
         totalRank,
         totalScore: total,
         date: new Date().toISOString()
       };
 
-      const res = await fetch('/api/submit-evaluation', {//post end point
+      const res = await fetch('/api/peer-evaluation/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -100,7 +102,7 @@ export default function PeerEvaluation() {
 
       const data = await res.json();
       if (res.ok) {
-        setMessage(`✅ Evaluation for ${selectedEmployee.name} submitted successfully!`);
+        setMessage(`✅ Evaluation for ${(selectedEmployee.fullName || selectedEmployee.name)} submitted successfully!`);
       } else {
         setMessage(`❌ Failed to submit: ${data.message || 'Unknown error'}`);
       }
@@ -135,14 +137,14 @@ export default function PeerEvaluation() {
             <label className="block mb-2 font-medium text-gray-700">Select Employee</label>
             <select
               onChange={handleEmployeeChange}
-              value={selectedEmployee?.id || ''}
+              value={(selectedEmployee?._id || selectedEmployee?.id) || ''}
               className="border p-2 rounded w-full"
               disabled={loading}
             >
               <option value="">-- Choose Employee --</option>
               {employees.map(emp => (
-                <option key={emp.id} value={emp.id}>
-                  {emp.name}
+                <option key={emp._id || emp.id} value={emp._id || emp.id}>
+                  {emp.fullName || emp.name}
                 </option>
               ))}
             </select>

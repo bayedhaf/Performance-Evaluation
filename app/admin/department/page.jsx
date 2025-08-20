@@ -59,7 +59,7 @@ export default function DepartmentManagement() {
     e.preventDefault()
     try {
       const url = editingDepartment 
-        ? `/api/admin/departments/${editingDepartment.id}`
+        ? `/api/admin/departments/${editingDepartment._id}`
         : '/api/admin/departments'
       
       const method = editingDepartment ? 'PUT' : 'POST'
@@ -82,7 +82,6 @@ export default function DepartmentManagement() {
       setFormData({ name: '', code: '', description: '' })
       fetchDepartments()
       
-      // Show success message
       alert(editingDepartment ? 'Department updated successfully!' : 'Department created successfully!')
     } catch (err) {
       setError(err.message)

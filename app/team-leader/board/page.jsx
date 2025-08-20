@@ -1,5 +1,5 @@
 'use client'
-import AdminNavbar from '@/app/employee/shared/admin-navbar/AdminNavbar'
+import TeamLeaderNavbar from '@/app/employee/shared/team-leadernavbar/TeamLeaderNavbar'
 import { useState, useEffect } from 'react'
 
 export default function EmployeeEvaluationBoard() {
@@ -9,9 +9,14 @@ export default function EmployeeEvaluationBoard() {
   useEffect(() => {
     async function fetchEvaluations() {
       try {
-        const res = await fetch('https://dummyjson.com/c/c6b5-f43d-456c-9efe') // Replace with your real endpoint
+        const res = await fetch('/api/evaluations?status=submitted')
         const data = await res.json()
-        setEvaluations(Array.isArray(data) ? data : [])
+        setEvaluations(Array.isArray(data) ? data.map(e => ({
+          id: e._id,
+          name: e.evaluatee?.firstName ? `${e.evaluatee.firstName} ${e.evaluatee.lastName}` : e.evaluatee?.email,
+          score: e.overallScore >= 80 ? 'Excellent' : e.overallScore >= 60 ? 'Good' : 'Average',
+          date: new Date(e.createdAt).toLocaleDateString()
+        })) : [])
       } catch (err) {
         setEvaluations([])
       }
@@ -30,7 +35,7 @@ export default function EmployeeEvaluationBoard() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <AdminNavbar />
+      <TeamLeaderNavbar />
       <div className="p-6 max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Employee Evaluation Board

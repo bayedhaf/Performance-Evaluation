@@ -1,5 +1,5 @@
 'use client'
-import AdminNavbar from '@/app/employee/shared/admin-navbar/AdminNavbar'
+import TeamLeaderNavbar from '@/app/employee/shared/team-leadernavbar/TeamLeaderNavbar'
 import { useState, useEffect } from 'react'
 import { CalendarDays } from 'lucide-react'
 import Link from 'next/link'
@@ -11,7 +11,7 @@ export default function CalendarPage() {
   useEffect(() => {
     async function fetchEvaluations() {
       try {
-        const res = await fetch('https://dummyjson.com/c/d992-dbf8-451d-885b') // Replace with your real API endpoint
+        const res = await fetch('/api/team/calendar')
         const data = await res.json()
         setEvaluations(Array.isArray(data) ? data : [])
       } catch (err) {
@@ -32,7 +32,7 @@ export default function CalendarPage() {
 
   return (
     <div>
-      <AdminNavbar />
+      <TeamLeaderNavbar />
       <div className="p-6 bg-gray-50 min-h-screen">
         <h1 className="text-3xl font-bold mb-6 text-gray-800">
           Employee Evaluation Calendar
@@ -47,14 +47,12 @@ export default function CalendarPage() {
               <p className="text-sm text-gray-500 mb-2">Date: {evalItem.date}</p>
               <p
                 className={`mt-2 mb-4 px-3 py-1 rounded-full text-sm font-medium inline-block ${
-                  evalItem.score === 'Excellent'
-                    ? 'bg-green-100 text-green-700'
-                    : evalItem.score === 'Good'
+                  evalItem.type === 'Task'
                     ? 'bg-blue-100 text-blue-700'
-                    : 'bg-red-100 text-red-700'
+                    : 'bg-green-100 text-green-700'
                 }`}
               >
-                {evalItem.score}
+                {evalItem.type}
               </p>
               <Link
                 href={`https://calendar.google.com/calendar/r/eventedit?text=Evaluation+-+${encodeURIComponent(evalItem.name)}&dates=${evalItem.date.replace(/-/g, '')}T090000Z/${evalItem.date.replace(/-/g, '')}T100000Z`}

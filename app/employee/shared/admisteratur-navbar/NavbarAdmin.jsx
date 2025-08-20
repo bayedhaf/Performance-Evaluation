@@ -13,9 +13,7 @@ export default function AdminstractureNavBar() {
 
   const navLinks = [
     { name: 'Dashboard', href: '/admin/dashboard' },
-    { name: 'Reports', href: '/report' },
-    { name: 'Employees', href: '/employee/employee_list' },
-    { name: 'Department', href: '/department' },
+ 
   ]
 
   return (
@@ -35,26 +33,28 @@ export default function AdminstractureNavBar() {
         </div>
 
        
-        <ul className='hidden md:flex gap-6 text-white'>
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <Link href={link.href} className='hover:underline'>
-                {link.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
+     
 
       
-        <div className='hidden md:block'>
-          <Link href='/profile'>
-            <IoMdPersonAdd className='text-2xl' />
-          </Link>
-        </div>
+       <div className="hidden md:flex items-center gap-6">
+  <ul className="hidden md:flex gap-6 text-white">
+    {navLinks.map((link) => (
+      <li key={link.href}>
+        <Link href={link.href} className="hover:underline">
+          {link.name}
+        </Link>
+      </li>
+    ))}
+  </ul>
+  <Link href="/profile">
+    <IoMdPersonAdd className="text-2xl" />
+  </Link>
+</div>
+
 
    
         <div className='md:hidden text-2xl cursor-pointer' onClick={() => setMenuOpen(!menuOpen)}>
-          {menuOpen ? <MdCancel /> : <IoMdMenu />}
+          {menuOpen ? <MdCancel className='text-black'/> : <IoMdMenu className='text-black' />}
         </div>
       </nav>
 

@@ -15,9 +15,9 @@ export default function AdminEvaluationBehavioral() {
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const res = await fetch('https://dummyjson.com/c/1b8a-19cc-41c5-bbd8'); // Replace with your get endpoint
+        const res = await fetch('/api/team/members');
         const data = await res.json();
-        setUsers(Array.isArray(data) ? data : []);
+        setUsers(Array.isArray(data.users) ? data.users : []);
       } catch (err) {
         setUsers([]);
       }
@@ -26,8 +26,8 @@ export default function AdminEvaluationBehavioral() {
   }, []);
 
   const handleEmployeeChange = (e) => {
-    const empId = Number(e.target.value);
-    const employee = users.find((u) => u.id === empId);
+    const empId = e.target.value;
+    const employee = users.find((u) => (u._id || u.id) === empId);
     setSelectedEmployee(employee || null);
   };
 
@@ -61,27 +61,29 @@ export default function AdminEvaluationBehavioral() {
     }
 
     const payload = {
-      employeeId: selectedEmployee.id,
-      employeeName: selectedEmployee.name,
-      tasks: taskData.map((t) => ({ name: t.name, weight: t.weight, rank: t.rank })),
-      totalRank,
-      totalScore: total,
-      year: selectedEmployee.year || new Date().getFullYear(),
+      title: `Peer Evaluation Tasks (${new Date().getFullYear()})`,
+      description: 'Tasks for 10% peer evaluation',
+      assignedTo: selectedEmployee._id || selectedEmployee.id,
+      priority: 'medium',
+      category: 'peer_evaluation',
+      evaluationCriteria: taskData.map((t) => ({ criterion: t.name, weight: Number(t.weight) })),
+      dueDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+      maxScore: 10
     };
 
     setLoading(true);
     setMessage('');
 
     try {
-      const res = await fetch('/api/evaluations', {//post api end point
+      const res = await fetch('/api/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error('Failed to submit evaluation');
+      if (!res.ok) throw new Error('Failed to create tasks');
 
-      setMessage('Evaluation submitted successfully!');
+      setMessage('Tasks created successfully!');
       setSelectedEmployee(null);
       setTaskData([]);
       setNewTask({ name: '', weight: '', rank: 0 });
@@ -119,12 +121,12 @@ export default function AdminEvaluationBehavioral() {
               <select
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 outline-none"
                 onChange={handleEmployeeChange}
-                value={selectedEmployee?.id || ''}
+                value={(selectedEmployee?._id || selectedEmployee?.id) || ''}
               >
                 <option value="">Choose an employee</option>
                 {users.map((emp) => (
-                  <option key={emp.id} value={emp.id}>
-                    {emp.name}
+                  <option key={emp._id || emp.id} value={emp._id || emp.id}>
+                    {emp.fullName || emp.name}
                   </option>
                 ))}
               </select>

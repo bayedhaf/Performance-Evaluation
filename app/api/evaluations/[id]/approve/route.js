@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
 import Evaluation from '@/models/Evaluation';
 import User from '@/models/User'; // Added missing import for User
@@ -7,7 +8,7 @@ import User from '@/models/User'; // Added missing import for User
 // POST approve/reject evaluation
 export async function POST(request, { params }) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

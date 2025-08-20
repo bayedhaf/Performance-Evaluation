@@ -1,6 +1,6 @@
 'use client'
 
-import AdminNavbar from '@/app/employee/shared/admin-navbar/AdminNavbar'
+import TeamLeaderNavbar from '@/app/employee/shared/team-leadernavbar/TeamLeaderNavbar'
 import { useState, useEffect } from 'react'
 
 export default function SingleTeam() {
@@ -14,12 +14,17 @@ export default function SingleTeam() {
   }
 
   useEffect(() => {
-  
     async function fetchTeam() {
+      setLoading(true)
       try {
-        const res = await fetch('https://dummyjson.com/c/8825-d574-41fc-a967') //replace this
+        const res = await fetch('/api/team/members')
         const data = await res.json()
-        setTeam(data)
+        setTeam({ name: 'My Team', members: (data.users || []).map(u => ({
+          name: u.fullName,
+          email: u.email,
+          phone: '',
+          status: 'Active'
+        })) })
       } catch (err) {
         setTeam(null)
       }
@@ -46,7 +51,7 @@ export default function SingleTeam() {
 
   return (
     <div className="w-full min-h-screen mb-20 flex flex-col bg-gray-50">
-      <AdminNavbar />
+      <TeamLeaderNavbar />
       <main className="flex-grow p-4 sm:p-8 max-w-7xl mx-auto w-full">
         <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">
           Team: {team.name}

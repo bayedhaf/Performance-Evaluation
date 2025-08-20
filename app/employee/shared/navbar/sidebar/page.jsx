@@ -16,15 +16,19 @@ export default function SideBar() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch('https://dummyjson.com/users/1') // ✅ example API
-        const data = await response.json()
-        setUser(data)
+        const response = await fetch('/api/employee/profile');
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          console.error('Error fetching user:', response.statusText);
+        }
       } catch (error) {
-        console.error('Error fetching user:', error)
+        console.error('Error fetching user:', error);
       }
     }
 
-    fetchUserData()
+    fetchUserData();
   }, [])
 
   if (!user) {
@@ -40,7 +44,7 @@ export default function SideBar() {
       <CardHeader className="text-center border-b py-6 bg-[#8D92EB] text-white shadow-md">
         <div className="flex flex-col items-center">
           <Image
-            src={user.image || '/default-profile.png'} // ✅ matches dummyjson data
+            src={user.profileImage || '/image/astuLogo.png'}
             alt="Profile"
             width={80}
             height={80}
@@ -48,7 +52,7 @@ export default function SideBar() {
             className="rounded-full object-cover mb-2 shadow-md"
           />
           <CardTitle className="text-white text-lg font-semibold tracking-wide">
-            <span className="font-semibold text-black">Full Name:</span> {user.firstName} {user.lastName}
+            <span className="font-semibold text-black">Full Name:</span> {user.fullName}
           </CardTitle>
         </div>
       </CardHeader>
@@ -59,7 +63,7 @@ export default function SideBar() {
         </Link>
         <div className="flex justify-between">
           <span className="font-semibold text-gray-600">Department:</span>
-          <span>{user.company?.department}</span>
+          <span>{user.department || 'N/A'}</span>
         </div>
         <div className="flex justify-between">
           <span className="font-semibold text-gray-600">Email:</span>
@@ -67,16 +71,18 @@ export default function SideBar() {
         </div>
         <div className="flex justify-between">
           <span className="font-semibold text-gray-600">Phone:</span>
-          <span>{user.phone}</span>
+          <span>{user.phone || 'N/A'}</span>
         </div>
         <div className="flex justify-between">
-          <span className="font-semibold text-gray-600">City:</span>
-          <span>{user.address?.city}</span>
+          <span className="font-semibold text-gray-600">Position:</span>
+          <span>{user.position || 'N/A'}</span>
         </div>
         <div className="flex justify-between">
           <span className="font-semibold text-gray-600">Status:</span>
-          <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700 font-medium">
-            Active
+          <span className={`px-2 py-1 text-xs rounded-full font-medium ${
+            user.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'
+          }`}>
+            {user.isActive ? 'Active' : 'Inactive'}
           </span>
         </div>
       </CardContent>

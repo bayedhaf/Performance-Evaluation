@@ -19,7 +19,7 @@ export default function ProfilePage() {
       return
     }
 
-    // Set user data from session
+   
     setUser({
       fullName: session.user.fullName || `${session.user.firstName} ${session.user.lastName}`,
       email: session.user.email,

@@ -83,7 +83,7 @@ export default function EmployeeList() {
         ...filters
       })
 
-      const response = await fetch(`/api/admin/employees?${params}`)
+      const response = await fetch(`/api/admin/employees?${params.toString()}`)
       if (!response.ok) throw new Error('Failed to fetch employees')
       const data = await response.json()
       
@@ -118,7 +118,7 @@ export default function EmployeeList() {
   const handleEditSubmit = async (e) => {
     e.preventDefault()
     try {
-      const response = await fetch(`/api/roles/${editingEmployee.id}`, {
+      const response = await fetch(`/api/roles/${editingEmployee._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editForm)
@@ -186,10 +186,10 @@ export default function EmployeeList() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 ">
       <AdminstractureNavBar />
       
-      <div className="container mx-auto px-6 py-8 mt-20">
+      <div className="container mx-auto px-6 py-8 mt-20 mb-20">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Employee Management</h1>
@@ -205,7 +205,7 @@ export default function EmployeeList() {
           </Button>
         </div>
 
-        {/* Filters */}
+       
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -276,7 +276,7 @@ export default function EmployeeList() {
           </CardContent>
         </Card>
 
-        {/* Employee Table */}
+      
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
@@ -366,7 +366,7 @@ export default function EmployeeList() {
                   </TableBody>
                 </Table>
 
-                {/* Pagination */}
+               
                 {pagination.totalPages > 1 && (
                   <div className="flex justify-between items-center mt-6">
                     <Button

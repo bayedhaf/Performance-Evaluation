@@ -9,7 +9,7 @@ export default function PeerAndSelfReportPage() {
   useEffect(() => {
     async function fetchReports() {
       try {
-        const res = await fetch('https://dummyjson.com/c/e221-4eb0-4d72-9a4c'); // Replace with your get API endpoint
+        const res = await fetch(''); // Replace with your get API endpoint
         const data = await res.json();
         setReportFile(Array.isArray(data) ? data : []);
       } catch (err) {

@@ -2,14 +2,31 @@
 
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { IoMdPersonAdd, IoMdMenu } from "react-icons/io"
 import { MdCancel } from "react-icons/md"
 
 
-export default function AdminNavbar() {
+export default function TeamLeaderNavbar() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [profile, setProfile] = useState({ name: 'Team Leader', image: '/image/astuLogo.png' })
+
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const res = await fetch('/api/profile')
+        if (res.ok) {
+          const data = await res.json()
+          setProfile({
+            name: data.user?.fullName || 'Team Leader',
+            image: data.user?.profileImage || '/image/astuLogo.png'
+          })
+        }
+      } catch (_) {}
+    }
+    fetchProfile()
+  }, [])
 
   const navLinks = [
     { name: 'Home', href: '/team-leader/dashboard' },
@@ -22,33 +39,34 @@ export default function AdminNavbar() {
        
         <div className="flex items-center gap-2">
           <Image
-            className='rounded-full'
-            src='/image/astuLogo.png'
+            className='rounded-full object-cover'
+            src={profile.image}
             height={50}
             width={50}
-            alt='ASTU'
+            alt='Profile'
             sizes="50px"
           />
-          <span className='text-xl font-semibold'>Team Leader</span>
+          <span className='text-xl font-semibold'>{profile.name}</span>
         </div>
 
        
-        <ul className='hidden md:flex gap-6 float-right text-white'>
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <Link href={link.href} className='hover:underline'>
-                {link.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-
       
-        <div className='hidden md:block'>
-          <Link href='/profile'>
-            <IoMdPersonAdd className='text-2xl' />
-          </Link>
-        </div>
+      
+        <div className="hidden md:flex items-center justify-end gap-6 text-white">
+  <ul className="flex gap-6">
+    {navLinks.map((link) => (
+      <li key={link.href}>
+        <Link href={link.href} className="hover:underline">
+          {link.name}
+        </Link>
+      </li>
+    ))}
+  </ul>
+  <Link href="/profile">
+    <IoMdPersonAdd className="text-2xl hover:text-gray-300" />
+  </Link>
+</div>
+
 
    
         <div className='md:hidden text-2xl cursor-pointer' onClick={() => setMenuOpen(!menuOpen)}>
@@ -76,3 +94,5 @@ export default function AdminNavbar() {
     </Card>
   )
 }
+
+

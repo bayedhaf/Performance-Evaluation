@@ -11,22 +11,25 @@ import {
   CardContent,
 } from '@/components/ui/card'
 
-export default function AdminSideBar() {
+export default function TeamLeaderSideBar() {
   const [leaderData, setLeaderData] = useState(null)
 
   useEffect(() => {
     async function fetchLeaderData() {
       try {
-        const res = await fetch('https://dummyjson.com/c/03cd-43ab-48a4-88a2') // your backend endpoint
-        const data = await res.json()
-        setLeaderData(data)
+        const res = await fetch('/api/profile')
+        if (res.ok) {
+          const data = await res.json()
+          setLeaderData({
+            name: data.user?.fullName || 'Team Leader',
+            logo: data.user?.profileImage || '/image/astuLogo.png'
+          })
+        } else {
+          setLeaderData({ name: 'Team Leader', logo: '/image/astuLogo.png' })
+        }
       } catch (err) {
         console.error('Error fetching leader data:', err)
-        // Set fallback data if API fails
-        setLeaderData({
-          logo: '/image/astuLogo.png',
-          name: 'Admin Dashboard'
-        })
+        setLeaderData({ name: 'Team Leader', logo: '/image/astuLogo.png' })
       }
     }
     fetchLeaderData()
@@ -47,18 +50,14 @@ export default function AdminSideBar() {
       <CardHeader className="text-center border-b py-6 bg-[#8D92EB] text-white shadow-md">
         <div className="flex flex-col items-center justify-center">
           <Image
-            src={leaderData.logo || '/image/astuLogo.png'}
+            src={leaderData.logo}
             alt="Leader Logo"
             width={80}
             height={80}
             className="rounded-full object-cover mb-2"
-            sizes="80px"
-            onError={(e) => {
-              e.target.src = '/image/astuLogo.png'
-            }}
           />
           <CardTitle className="text-lg font-semibold tracking-wide">
-            {leaderData.name || 'Admin Dashboard'}
+            {leaderData.name}
           </CardTitle>
         </div>
       </CardHeader>
@@ -67,8 +66,14 @@ export default function AdminSideBar() {
         <Link href="/team-leader/dashboard" className="block">
           <SidebarItem label="Home" />
         </Link>
-        <Link href="teams" className="block">
+        <Link href="/team-leader/teams" className="block">
           <SidebarItem label="Teams" />
+        </Link>
+        <Link href="/team-leader/peer-evaluation" className="block">
+          <SidebarItem label="Create Peer Tasks (10%)" />
+        </Link>
+        <Link href="/team-leader/self-evaluationform" className="block">
+          <SidebarItem label="Create self evaluation" />
         </Link>
       </CardContent>
     </Card>

@@ -11,7 +11,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { useState } from 'react'
-import { FcGoogle } from 'react-icons/fc'
+
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -19,7 +19,7 @@ export default function Page() {
   const [form, setForm] = useState({ email: '', password: '' })
   const [pending,setPending]=useState(false)
   return (
-    <div className='relative min-h-screen bg-[url("/image/astuget1.jpg")] bg-cover bg-center'>
+    <div className='fixed h-screen place-items-center m-auto min-h-screen bg-[url("/image/astuget1.jpg")] bg-cover bg-center'>
     
       <div className='absolute inset-0 bg-white/50 backdrop-blur-sm z-0' />
 

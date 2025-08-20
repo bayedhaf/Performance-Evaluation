@@ -66,6 +66,22 @@ export async function POST(request) {
 
     await connectDB();
 
+    // Resolve department if provided (by id, code, or name)
+    let resolvedDepartment = null;
+    if (department && typeof department === 'string') {
+      const deptQuery = [];
+      // Try by ObjectId
+      if (department.match(/^[0-9a-fA-F]{24}$/)) {
+        deptQuery.push({ _id: department });
+      }
+      // Try by code (uppercase)
+      deptQuery.push({ code: department.toUpperCase() });
+      // Try by name (case-insensitive)
+      deptQuery.push({ name: new RegExp(`^${department}$`, 'i') });
+
+      resolvedDepartment = await Department.findOne({ $or: deptQuery });
+    }
+
     // Check if user already exists
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
@@ -109,6 +125,7 @@ export async function POST(request) {
       employeeId: employeeId,
       isActive: true,
       permissions: permissions,
+      department: resolvedDepartment?._id,
       // Additional fields can be stored in a separate collection or as metadata
       metadata: {
         gender,
@@ -127,6 +144,13 @@ export async function POST(request) {
     });
 
     await newUser.save();
+
+    // If department resolved, add user to department employees list
+    if (resolvedDepartment) {
+      await Department.findByIdAndUpdate(resolvedDepartment._id, {
+        $addToSet: { employees: newUser._id }
+      });
+    }
 
     return NextResponse.json({
       success: true,

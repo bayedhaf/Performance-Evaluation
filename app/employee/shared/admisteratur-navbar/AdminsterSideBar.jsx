@@ -61,7 +61,7 @@ export default function AdminsterSideBar() {
         <SidebarLink href="/admin/dashboard" icon={<MdDashboard />} label="Dashboard" />
         <SidebarLink href="/admin/dashboard/newusers" icon={<IoPersonAdd />} label="Register New Employee" />
         <SidebarLink href="/admin/department" icon={<GiStairsGoal />} label="Departments" />
-        <SidebarLink href="/employee/employee_list" icon={<FaPeopleGroup />} label="Employees" />
+        <SidebarLink href="/admin/employee_list" icon={<FaPeopleGroup />} label="Employees" />
         <SidebarLink href="/report" icon={<TbReportSearch />} label="Reports" />
         <SidebarLink href="/admin/setting" icon={<IoSettings />} label="Settings" />
       </nav>

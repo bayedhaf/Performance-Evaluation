@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 export default function PeerEvaluationForm() {
@@ -10,6 +10,21 @@ export default function PeerEvaluationForm() {
   const [tasks, setTasks] = useState([{ no: '', task: '', score: '' }]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [members, setMembers] = useState([]);
+  const [evaluateeId, setEvaluateeId] = useState('');
+
+  useEffect(() => {
+    async function loadMembers() {
+      try {
+        const res = await fetch('/api/team/members');
+        const data = await res.json();
+        setMembers(Array.isArray(data.users) ? data.users : []);
+      } catch (_) {
+        setMembers([]);
+      }
+    }
+    loadMembers();
+  }, []);
 
   const handleTaskChange = (index, field, value) => {
     const updatedTasks = [...tasks];
@@ -29,7 +44,7 @@ export default function PeerEvaluationForm() {
     e.preventDefault();
     setLoading(true);
     setMessage('');
-    const formData = { typeOfWork, rank, year, tasks };
+    const formData = { typeOfWork, rank, year, tasks, evaluateeId };
 
     try {
       const res = await fetch('/api/peer-evaluation/submit', {
@@ -42,8 +57,10 @@ export default function PeerEvaluationForm() {
         setTypeOfWork('');
         setRank('');
         setTasks([{ no: '', task: '', score: '' }]);
+        setEvaluateeId('');
       } else {
-        setMessage('Failed to submit form.');
+        const err = await res.json().catch(() => ({}));
+        setMessage(`Failed to submit form${err?.error ? `: ${err.error}` : ''}`);
       }
     } catch (err) {
       setMessage('Error submitting form.');
@@ -73,6 +90,24 @@ export default function PeerEvaluationForm() {
         onSubmit={handleSubmit}
         className=" mb-48 max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-lg space-y-6"
       >
+        <div className="flex flex-col sm:flex-row gap-6 justify-center">
+          <label className="flex flex-col text-sm font-semibold w-full">
+            Select Peer (same team)
+            <select
+              value={evaluateeId}
+              onChange={(e) => setEvaluateeId(e.target.value)}
+              className="mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+              required
+            >
+              <option value="">Choose team member</option>
+              {members.map((m) => (
+                <option key={m._id || m.id} value={m._id || m.id}>
+                  {m.fullName || m.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
         <div className="flex flex-col sm:flex-row gap-6 justify-center">
           <label className="flex flex-col text-sm font-semibold w-full">
             Type of Work Evaluation

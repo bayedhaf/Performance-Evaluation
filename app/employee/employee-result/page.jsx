@@ -6,15 +6,29 @@ import html2canvas from "html2canvas";
 
 export default function PerformanceEvaluationResult() {
   const [evaluation, setEvaluation] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchEvaluation() {
       try {
-        const res = await fetch("https://dummyjson.com/c/8ea0-21a5-4f8f-9c46"); 
+        setLoading(true);
+        setError(null);
+        const res = await fetch("/api/employee/evaluation-results");
+        if (!res.ok) {
+          throw new Error('Failed to fetch evaluation results');
+        }
         const data = await res.json();
-        setEvaluation(data);
+        if (data.success && data.evaluation) {
+          setEvaluation(data.evaluation);
+        } else {
+          setError(data.message || 'No evaluation results found');
+        }
       } catch (err) {
         console.error("Error fetching evaluation:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
     }
     fetchEvaluation();
@@ -32,10 +46,26 @@ export default function PerformanceEvaluationResult() {
     pdf.save("performance_evaluation.pdf");
   };
 
-  if (!evaluation) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
+
+  if (!evaluation) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-gray-500">No evaluation results found.</p>
       </div>
     );
   }

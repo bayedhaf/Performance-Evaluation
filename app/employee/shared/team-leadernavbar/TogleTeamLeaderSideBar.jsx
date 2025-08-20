@@ -3,9 +3,12 @@
 import React, { useState } from 'react'
 import { IoMdMenu } from "react-icons/io"
 import { MdCancel } from "react-icons/md"
-import AdminSideBar from '../admin-side-bar/AdminSidebar'
 
-export default function TogleAdminSideBar() {
+
+import TeamLeaderSideBar from './TeamLeaderSideBar'   
+
+
+export default function TogleTeamLeaderSideBar() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
@@ -20,12 +23,12 @@ export default function TogleAdminSideBar() {
       <div className="flex flex-1">
        
         <div className="hidden md:block w-64">
-          <AdminSideBar />
+          < TeamLeaderSideBar />
         </div>
 
         {menuOpen && (
           <div className="md:hidden w-full">
-            <AdminSideBar />
+            < TeamLeaderSideBar />
           </div>
         )}
       </div>

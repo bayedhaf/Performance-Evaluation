@@ -4,7 +4,7 @@ const evaluationSchema = new mongoose.Schema({
   task: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Task',
-    required: true
+    required: false // Changed from true to false to make it optional
   },
   evaluator: {
     type: mongoose.Schema.Types.ObjectId,

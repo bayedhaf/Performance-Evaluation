@@ -27,6 +27,7 @@ export default function AdminNavbar() {
             height={50}
             width={50}
             alt='ASTU'
+            sizes="50px"
           />
           <span className='text-xl font-semibold'>Team Leader</span>
         </div>

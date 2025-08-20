@@ -42,20 +42,24 @@ export default function PeerAndSelfReportPage() {
            
             <div className="bg-indigo-400 text-white text-center p-4 border-b border-gray-400 rounded-t-lg">
               <Image
-                src={user.employeeEvaluation.university.logo}
+                src={user.employeeEvaluation?.university?.logo || '/image/astuLogo.png'}
                 height={100}
                 width={100}
                 alt="ASTU Logo"
                 className="mx-auto w-20 h-20 mb-2 rounded-full"
+                sizes="80px"
+                onError={(e) => {
+                  e.target.src = '/image/astuLogo.png'
+                }}
               />
-              <h1 className="text-xl font-bold">{user.employeeEvaluation.university.name}</h1>
+              <h1 className="text-xl font-bold">{user.employeeEvaluation?.university?.name || 'ASTU'}</h1>
               <p className="text-sm">
                 1888 &nbsp;
-                {user.employeeEvaluation.university.contact.phone} &nbsp;
-                {user.employeeEvaluation.university.contact.fax} &nbsp;
-                {user.employeeEvaluation.university.contact.email}
+                {user.employeeEvaluation?.university?.contact?.phone || 'N/A'} &nbsp;
+                {user.employeeEvaluation?.university?.contact?.fax || 'N/A'} &nbsp;
+                {user.employeeEvaluation?.university?.contact?.email || 'N/A'}
               </p>
-              <p className="text-xs italic">{user.employeeEvaluation.university.department}</p>
+              <p className="text-xs italic">{user.employeeEvaluation?.university?.department || 'N/A'}</p>
             </div>
 
           

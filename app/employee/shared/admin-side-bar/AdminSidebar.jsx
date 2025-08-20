@@ -22,6 +22,11 @@ export default function AdminSideBar() {
         setLeaderData(data)
       } catch (err) {
         console.error('Error fetching leader data:', err)
+        // Set fallback data if API fails
+        setLeaderData({
+          logo: '/image/astuLogo.png',
+          name: 'Admin Dashboard'
+        })
       }
     }
     fetchLeaderData()
@@ -42,14 +47,18 @@ export default function AdminSideBar() {
       <CardHeader className="text-center border-b py-6 bg-[#8D92EB] text-white shadow-md">
         <div className="flex flex-col items-center justify-center">
           <Image
-            src={leaderData.logo}
+            src={leaderData.logo || '/image/astuLogo.png'}
             alt="Leader Logo"
             width={80}
             height={80}
             className="rounded-full object-cover mb-2"
+            sizes="80px"
+            onError={(e) => {
+              e.target.src = '/image/astuLogo.png'
+            }}
           />
           <CardTitle className="text-lg font-semibold tracking-wide">
-            {leaderData.name}
+            {leaderData.name || 'Admin Dashboard'}
           </CardTitle>
         </div>
       </CardHeader>

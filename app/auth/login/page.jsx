@@ -14,10 +14,67 @@ import { useState } from 'react'
 import { FcGoogle } from 'react-icons/fc'
 import Link from 'next/link'
 import Image from 'next/image'
+import { signIn, useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' })
-  const [pending,setPending]=useState(false)
+  const [pending, setPending] = useState(false)
+  const [error, setError] = useState('')
+  const { data: session, status } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (session) {
+      // Redirect based on user role
+      if (session.user.role === 'admin') {
+        router.push('/admin/dashboard')
+      } else if (session.user.role === 'team-leader') {
+        router.push('/team-leader/dashboard')
+      } else if (session.user.role === 'employee') {
+        router.push('/employee/employee-dashboard')
+      }
+    }
+  }, [session, router])
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setPending(true)
+    setError('')
+
+    try {
+      const result = await signIn('credentials', {
+        email: form.email,
+        password: form.password,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        setError('Invalid email or password')
+      } else if (result?.ok) {
+        // Success - useEffect will handle redirect
+        console.log('Login successful')
+      }
+    } catch (error) {
+      setError('An error occurred during login')
+      console.error('Login error:', error)
+    } finally {
+      setPending(false)
+    }
+  }
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className='relative min-h-screen bg-[url("/image/astuget1.jpg")] bg-cover bg-center'>
     
@@ -52,7 +109,13 @@ export default function Login() {
           </CardHeader>
 
           <CardContent>
-            <form className='space-y-4'>
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                {error}
+              </div>
+            )}
+            
+            <form className='space-y-4' onSubmit={handleSubmit}>
               <Input
                 type='email'
                 name='email'
@@ -61,6 +124,7 @@ export default function Login() {
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 placeholder='Enter your email...'
                 className='bg-gray-100'
+                required
               />
               <Input
                 type='password'
@@ -70,13 +134,14 @@ export default function Login() {
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 placeholder='********'
                 className='bg-gray-100'
+                required
               />
               <Button
                 type='submit'
                 disabled={pending}
                 className='w-full bg-indigo-600 text-white hover:bg-indigo-700 transition-transform hover:scale-105'
               >
-                Login
+                {pending ? 'Signing in...' : 'Login'}
               </Button>
             </form>
 
@@ -98,9 +163,7 @@ export default function Login() {
             <Link href='/auth/forgot-password' className='text-sky-600 ml-2 hover:underline'>
                 Forgot-password
               </Link>
-
-            <p className='text-center  text-sm text-muted-foreground'>
-          
+            <p className='text-center text-sm text-muted-foreground'>
               If you don't have an account,
               <Link href='/auth/sign-up' className='text-sky-600 ml-2 hover:underline'>
                 Sign up

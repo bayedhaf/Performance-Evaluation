@@ -29,6 +29,7 @@ export default function AdminstractureNavBar() {
             height={50}
             width={50}
             alt='ASTU'
+            sizes="50px"
           />
           <span className='text-xl font-semibold'>ADMINISTERATUR</span>
         </div>

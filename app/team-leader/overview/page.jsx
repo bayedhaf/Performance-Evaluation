@@ -1,5 +1,5 @@
 'use client'
-import AdminNavbar from '@/app/employee/shared/admin-navbar/AdminNavbar'
+import TeamLeaderNavbar from '@/app/employee/shared/team-leadernavbar/TeamLeaderNavbar'
 import { Calendar, Users, BarChart3, Award } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
@@ -11,7 +11,7 @@ export default function OverviewPage() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const res = await fetch('https://dummyjson.com/c/d318-b05e-47fe-aef9') // Replace with your get endpoint
+        const res = await fetch('/api/team/overview-stats')
         const data = await res.json()
         setStats(Array.isArray(data) ? data : [])
       } catch (err) {
@@ -37,7 +37,7 @@ export default function OverviewPage() {
 
   return (
     <div>
-      <AdminNavbar />
+      <TeamLeaderNavbar />
       <div className="p-6 bg-gray-50 min-h-screen">
         <h1 className="text-3xl font-bold text-gray-800 mb-6 bg-gray-200 ">Dashboard Overview</h1>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">

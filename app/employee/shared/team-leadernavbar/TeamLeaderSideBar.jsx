@@ -11,17 +11,25 @@ import {
   CardContent,
 } from '@/components/ui/card'
 
-export default function AdminSideBar() {
+export default function TeamLeaderSideBar() {
   const [leaderData, setLeaderData] = useState(null)
 
   useEffect(() => {
     async function fetchLeaderData() {
       try {
-        const res = await fetch('https://dummyjson.com/c/03cd-43ab-48a4-88a2') // your backend endpoint
-        const data = await res.json()
-        setLeaderData(data)
+        const res = await fetch('/api/profile')
+        if (res.ok) {
+          const data = await res.json()
+          setLeaderData({
+            name: data.user?.fullName || 'Team Leader',
+            logo: data.user?.profileImage || '/image/astuLogo.png'
+          })
+        } else {
+          setLeaderData({ name: 'Team Leader', logo: '/image/astuLogo.png' })
+        }
       } catch (err) {
         console.error('Error fetching leader data:', err)
+        setLeaderData({ name: 'Team Leader', logo: '/image/astuLogo.png' })
       }
     }
     fetchLeaderData()
@@ -58,8 +66,14 @@ export default function AdminSideBar() {
         <Link href="/team-leader/dashboard" className="block">
           <SidebarItem label="Home" />
         </Link>
-        <Link href="teams" className="block">
+        <Link href="/team-leader/teams" className="block">
           <SidebarItem label="Teams" />
+        </Link>
+        <Link href="/team-leader/peer-evaluation" className="block">
+          <SidebarItem label="Create Peer Tasks (10%)" />
+        </Link>
+        <Link href="/team-leader/self-evaluationform" className="block">
+          <SidebarItem label="Create self evaluation" />
         </Link>
       </CardContent>
     </Card>

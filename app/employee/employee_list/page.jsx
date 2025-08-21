@@ -13,14 +13,14 @@ export default function EmployeeList() {
 
   const fetchEmployees = async () => {
     try {
-      const res = await fetch('https://dummyjson.com/c/b2d4-06cf-4b34-88c0')
-      if (!res.ok) throw new Error('Failed to fetch employees')
-      const data = await res.json()
-      setEmployees(data)
+      const res = await fetch('/api/users');
+      if (!res.ok) throw new Error('Failed to fetch employees');
+      const data = await res.json();
+      setEmployees(data.users || []);
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     }
-    setLoading(false)
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -29,53 +29,57 @@ export default function EmployeeList() {
 
   const toggleStatus = async (id, currentStatus) => {
     try {
-      const res = await fetch(`/api/employees/${id}/status`, {
+      const res = await fetch(`/api/users/${id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: currentStatus === 'Active' ? 'Inactive' : 'Active' }),
-      })
-      if (!res.ok) throw new Error('Failed to update status')
-      fetchEmployees()
+        body: JSON.stringify({ isActive: currentStatus === 'Active' ? false : true }),
+      });
+      if (!res.ok) throw new Error('Failed to update status');
+      fetchEmployees();
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     }
-  }
+  };
 
   const deleteEmployee = async (id) => {
-    if (!confirm('Are you sure you want to delete this employee?')) return
+    if (!confirm('Are you sure you want to delete this employee?')) return;
     try {
-      const res = await fetch(`/api/employees/${id}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error('Failed to delete employee')
-      fetchEmployees()
+      const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete employee');
+      fetchEmployees();
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     }
-  }
+  };
 
   const startEdit = (employee) => {
-    setEditingId(employee.id)
-    setEditForm(employee)
-  }
+    setEditingId(employee._id || employee.id);
+    setEditForm({
+      fullName: employee.fullName || `${employee.firstName} ${employee.lastName}`,
+      department: employee.department?.name || employee.department || '',
+      position: employee.position || '',
+    });
+  };
 
   const handleEditChange = (e) => {
-    const { name, value } = e.target
-    setEditForm((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+  };
 
   const submitEdit = async (id) => {
     try {
-      const res = await fetch(`/api/employees/${id}`, {
+      const res = await fetch(`/api/users/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editForm),
-      })
-      if (!res.ok) throw new Error('Failed to update employee')
-      setEditingId(null)
-      fetchEmployees()
+      });
+      if (!res.ok) throw new Error('Failed to update employee');
+      setEditingId(null);
+      fetchEmployees();
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     }
-  }
+  };
 
   if (loading) return <p className="text-center mt-10 animate-pulse">Loading employees...</p>
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>
@@ -115,9 +119,9 @@ export default function EmployeeList() {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {employees.map((emp) => (
-                  <tr key={emp.id} className="hover:bg-indigo-50 transition duration-300">
+                  <tr key={emp._id || emp.id} className="hover:bg-indigo-50 transition duration-300">
                     <td className="px-4 py-3">
-                      {editingId === emp.id ? (
+                      {editingId === (emp._id || emp.id) ? (
                         <input
                           type="text"
                           name="fullName"
@@ -126,11 +130,11 @@ export default function EmployeeList() {
                           className="border px-2 py-1 rounded w-full"
                         />
                       ) : (
-                        emp.fullName
+                        emp.fullName || `${emp.firstName} ${emp.lastName}`
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      {editingId === emp.id ? (
+                      {editingId === (emp._id || emp.id) ? (
                         <input
                           type="text"
                           name="department"
@@ -139,11 +143,11 @@ export default function EmployeeList() {
                           className="border px-2 py-1 rounded w-full"
                         />
                       ) : (
-                        emp.department
+                        emp.department?.name || emp.department || 'N/A'
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      {editingId === emp.id ? (
+                      {editingId === (emp._id || emp.id) ? (
                         <input
                           type="text"
                           name="position"
@@ -152,30 +156,30 @@ export default function EmployeeList() {
                           className="border px-2 py-1 rounded w-full"
                         />
                       ) : (
-                        emp.position
+                        emp.position || 'N/A'
                       )}
                     </td>
                     <td className="px-4 py-3 text-blue-600 hover:underline cursor-pointer">
                       {emp.email}
                     </td>
-                    <td className="px-4 py-3">{emp.phone}</td>
+                    <td className="px-4 py-3">{emp.phone || 'N/A'}</td>
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs font-semibold rounded-full cursor-pointer shadow-sm ${
-                          emp.status === 'Active'
+                          emp.isActive
                             ? 'bg-green-100 text-green-700'
                             : 'bg-red-100 text-red-600'
                         }`}
-                        onClick={() => toggleStatus(emp.id, emp.status)}
+                        onClick={() => toggleStatus(emp._id || emp.id, emp.isActive ? 'Active' : 'Inactive')}
                       >
-                        {emp.status}
+                        {emp.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </td>
                     <td className="px-4 py-3 flex gap-2">
-                      {editingId === emp.id ? (
+                      {editingId === (emp._id || emp.id) ? (
                         <>
                           <button
-                            onClick={() => submitEdit(emp.id)}
+                            onClick={() => submitEdit(emp._id || emp.id)}
                             className="px-3 py-1 bg-green-600 text-white rounded shadow hover:bg-green-700 transition"
                           >
                             Save
@@ -196,7 +200,7 @@ export default function EmployeeList() {
                             Edit
                           </button>
                           <button
-                            onClick={() => deleteEmployee(emp.id)}
+                            onClick={() => deleteEmployee(emp._id || emp.id)}
                             className="px-3 py-1 bg-red-600 text-white rounded shadow hover:bg-red-700 transition"
                           >
                             Delete

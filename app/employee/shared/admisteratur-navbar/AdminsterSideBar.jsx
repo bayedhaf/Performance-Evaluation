@@ -10,18 +10,25 @@ import { IoSettings, IoPersonAdd } from "react-icons/io5"
 import Link from 'next/link'
 
 export default function AdminsterSideBar() {
-  const [admin, setAdmin] = useState({ name: '', image: '' })
+  const [admin, setAdmin] = useState({ name: 'Admin User', image: '/image/astuLogo.png' })
 
   useEffect(() => {
     async function fetchAdmin() {
       try {
         const res = await fetch('/api/admin/profile')
-        const data = await res.json()
-        setAdmin({
-          name: data.name || 'Admin User',
-          image: data.image || '/image/astuLogo.png'
-        })
-      } catch {
+        if (res.ok) {
+          const data = await res.json()
+          setAdmin({
+            name: data.user?.fullName || 'Admin User',
+            image: data.user?.profileImage || '/image/astuLogo.png'
+          })
+        } else {
+          // Use fallback data if API fails
+          setAdmin({ name: 'Admin User', image: '/image/astuLogo.png' })
+        }
+      } catch (error) {
+        console.error('Error fetching admin profile:', error)
+        // Use fallback data if API fails
         setAdmin({ name: 'Admin User', image: '/image/astuLogo.png' })
       }
     }
@@ -39,6 +46,10 @@ export default function AdminsterSideBar() {
               fill
               className="rounded-full object-cover border-4 border-white shadow-lg"
               priority
+              sizes="80px"
+              onError={(e) => {
+                e.target.src = '/image/astuLogo.png'
+              }}
             />
           </div>
           <div className="text-lg font-bold tracking-wide mt-2">{admin.name}</div>
@@ -50,7 +61,7 @@ export default function AdminsterSideBar() {
         <SidebarLink href="/admin/dashboard" icon={<MdDashboard />} label="Dashboard" />
         <SidebarLink href="/admin/dashboard/newusers" icon={<IoPersonAdd />} label="Register New Employee" />
         <SidebarLink href="/admin/department" icon={<GiStairsGoal />} label="Departments" />
-        <SidebarLink href="/employee/employee_list" icon={<FaPeopleGroup />} label="Employees" />
+        <SidebarLink href="/admin/employee_list" icon={<FaPeopleGroup />} label="Employees" />
         <SidebarLink href="/report" icon={<TbReportSearch />} label="Reports" />
         <SidebarLink href="/admin/setting" icon={<IoSettings />} label="Settings" />
       </nav>

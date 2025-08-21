@@ -12,19 +12,31 @@ export default function SelfEvaluation() {
 
   useEffect(() => {
     async function fetchData() {
-      // Fetch user info endpoint)
-      const userRes = await fetch(' https://dummyjson.com/c/8171-a946-49e3-a1be');
-      const userData = await userRes.json();
-      setUser(userData);
+      try {
+        // Fetch user info from backend
+        const userRes = await fetch('/api/employee/profile');
+        if (userRes.ok) {
+          const userData = await userRes.json();
+          setUser(userData.user);
+        } else {
+          console.error('Failed to fetch user data');
+        }
 
-      // Fetch tasks  endpoint)
-      const taskRes = await fetch('https://dummyjson.com/c/3958-97b1-4bbf-bf8c');
-      let tasks = await taskRes.json();
-      if (!Array.isArray(tasks)) {
-        tasks = [];
+        // Fetch tasks from backend
+        const taskRes = await fetch('/api/employee/tasks');
+        if (taskRes.ok) {
+          const taskData = await taskRes.json();
+          const tasks = taskData.tasks || [];
+          setTaskData(tasks);
+          calculateTotals(tasks);
+        } else {
+          console.error('Failed to fetch tasks');
+          setTaskData([]);
+        }
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setTaskData([]);
       }
-      setTaskData(tasks);
-      calculateTotals(tasks);
     }
     fetchData();
   }, []);
@@ -101,11 +113,11 @@ export default function SelfEvaluation() {
         >
           <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 max-w-4xl mx-auto">
             {[
-              { label: 'Full Name', value: user.name },
-              { label: 'Job Type', value: user.jobType },
-              { label: 'Evaluation', value: user.evaluation },
-              { label: 'Position', value: user.position },
-              { label: 'Year', value: user.year },
+              { label: 'Full Name', value: user?.fullName || '' },
+              { label: 'Position', value: user?.position || '' },
+              { label: 'Department', value: user?.department || '' },
+              { label: 'Employee ID', value: user?.employeeId || '' },
+              { label: 'Year', value: new Date().getFullYear() },
             ].map((field, idx) => (
               <div key={idx} className="flex flex-col">
                 <label className="text-sm font-medium text-gray-700">{field.label}</label>

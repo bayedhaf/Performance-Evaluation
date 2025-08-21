@@ -32,39 +32,40 @@ export default function EditUserForm({ userId }) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(`/api/users/${userId}`)
+        const res = await fetch('/api/employee/profile');
         if (res.ok) {
-          const data = await res.json()
+          const data = await res.json();
+          const userData = data.user;
           setForm({
-            fullName: data.fullName || '',
-            gender: data.gender || '',
-            dob: data.dob || '',
-            email: data.email || '',
+            fullName: userData.fullName || '',
+            gender: userData.gender || '',
+            dob: userData.dob || '',
+            email: userData.email || '',
             password: '',
-            phone: data.phone || '',
-            country: data.country || '',
-            region: data.region || '',
+            phone: userData.phone || '',
+            country: userData.country || '',
+            region: userData.region || '',
             photo: null,
-            position: data.position || '',
-            level: data.level || '',
-            experience: data.experience || '',
-            field: data.field || '',
-            department: data.department || '',
-            instName: data.instName || '',
-            emgName: data.emgName || '',
-            emgRelation: data.emgRelation || '',
-            emgContact: data.emgContact || '',
-            emgJob: data.emgJob || '',
-          })
+            position: userData.position || '',
+            level: userData.level || '',
+            experience: userData.experience || '',
+            field: userData.field || '',
+            department: userData.department || '',
+            instName: userData.instName || '',
+            emgName: userData.emgName || '',
+            emgRelation: userData.emgRelation || '',
+            emgContact: userData.emgContact || '',
+            emgJob: userData.emgJob || '',
+          });
         } else {
-          setMessage('❌ Failed to fetch user details.')
+          setMessage('❌ Failed to fetch user details.');
         }
       } catch (err) {
-        setMessage('❌ Error: ' + err.message)
+        setMessage('❌ Error: ' + err.message);
       }
     }
-    if (userId) fetchUser()
-  }, [userId])
+    fetchUser();
+  }, [])
 
   const handleChange = (e) => {
     const { name, value, files } = e.target
@@ -78,29 +79,31 @@ export default function EditUserForm({ userId }) {
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1))
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setMessage('')
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
     try {
-      const formData = new FormData()
+      const formData = new FormData();
       Object.entries(form).forEach(([key, value]) => {
-        if (value) formData.append(key, value)
-      })
+        if (value) formData.append(key, value);
+      });
 
-      const res = await fetch(`/api/users/${userId}`, {
+      const res = await fetch('/api/employee/profile', {
         method: 'PUT',
         body: formData,
-      })
+      });
       if (res.ok) {
-        setMessage('✅ User updated successfully!')
+        const data = await res.json();
+        setMessage('✅ ' + (data.message || 'User updated successfully!'));
       } else {
-        setMessage('❌ Failed to update user.')
+        const errorData = await res.json();
+        setMessage('❌ ' + (errorData.error || 'Failed to update user.'));
       }
     } catch (err) {
-      setMessage('❌ Error: ' + err.message)
+      setMessage('❌ Error: ' + err.message);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-indigo-100 flex flex-col items-center px-0 py-0 font-sans">

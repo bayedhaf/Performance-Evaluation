@@ -1,11 +1,11 @@
-import AdminNavbar from '@/app/employee/shared/admin-navbar/AdminNavbar'
+import TeamLeaderNavbar from '@/app/employee/shared/team-leadernavbar/TeamLeaderNavbar'
 import SelfEvaluationForm from '@/components/forms/ SelfEvaluationForm'
 import React from 'react'
 
 export default function SelfEvaluationFormCreation() {
   return (
    <div className="">
-    <AdminNavbar/>
+    <TeamLeaderNavbar/>
     <SelfEvaluationForm/>
    </div>
   )

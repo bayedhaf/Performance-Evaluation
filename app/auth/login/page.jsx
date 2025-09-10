@@ -73,10 +73,10 @@ export default function Login() {
 
   return (
     <div className="relative min-h-screen bg-[url('/image/astuget1.jpg')] bg-cover bg-center bg-no-repeat">
-      {/* Overlay */}
+    
       <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-0" />
       
-      {/* Header - Fixed on large screens */}
+     
       <header className="relative z-10 w-full py-4 lg:fixed lg:top-0 lg:left-0 lg:right-0">
         <div className="container mx-auto flex flex-col items-center justify-center space-y-2">
           <Image
@@ -86,13 +86,12 @@ export default function Login() {
             height={60}
             className="rounded-full shadow-lg"
           />
-          <h1 className="text-xl font-bold text-gray-800 text-center px-4">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
             ASTU Staff Performance Evaluator
           </h1>
         </div>
       </header>
 
-      {/* Main Content - Centered */}
       <main className="relative z-10 flex items-center justify-center min-h-screen px-4 py-8">
         <Card className="w-full max-w-md p-6 sm:p-8 shadow-xl backdrop-blur-md bg-white/95 rounded-xl border border-gray-200">
           <CardHeader className="space-y-2">

@@ -9,7 +9,7 @@ export default function RolesPermissions() {
   const [roles, setRoles] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  // Roles are predefined; no editing state needed
+  
 
 
   const fetchRoles = async () => {
@@ -28,7 +28,6 @@ export default function RolesPermissions() {
     fetchRoles()
   }, [])
 
-  // Roles are predefined in the system; Settings displays their descriptions and default permissions.
 
   if (loading) return <p className="text-center mt-10 animate-pulse">Loading roles...</p>
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>
@@ -41,7 +40,7 @@ export default function RolesPermissions() {
       </div>
 
     
-      <div className="text-center mt-24 mb-8">
+      <div className="text-center mt-24 mb-8 ">
         <h1 className="text-4xl font-extrabold text-indigo-800 drop-shadow-md">
           🛡 Roles & Permissions
         </h1>
@@ -51,8 +50,8 @@ export default function RolesPermissions() {
       </div>
 
     
-      <div className="px-6 pb-12">
-        <Card className="p-6 shadow-2xl rounded-3xl bg-white border border-gray-200">
+      <div className="px-6 pb-12 ">
+        <Card className="p-6 shadow-2xl rounded-3xl bg-white border border-gray-200 mb-20">
           <div className="overflow-x-auto">
             <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden text-sm md:text-base">
               <thead className="bg-indigo-100 text-indigo-800 uppercase text-xs md:text-sm">

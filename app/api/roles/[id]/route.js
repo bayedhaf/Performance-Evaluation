@@ -7,7 +7,7 @@ import User from '@/models/User';
 export async function PUT(request, { params }) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -41,8 +41,8 @@ export async function PUT(request, { params }) {
 
       const invalidPermissions = permissions.filter(p => !validPermissions.includes(p));
       if (invalidPermissions.length > 0) {
-        return NextResponse.json({ 
-          error: `Invalid permissions: ${invalidPermissions.join(', ')}` 
+        return NextResponse.json({
+          error: `Invalid permissions: ${invalidPermissions.join(', ')}`
         }, { status: 400 });
       }
     }
@@ -74,7 +74,7 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -91,8 +91,8 @@ export async function DELETE(request, { params }) {
 
     // Prevent admin from deleting themselves
     if (user._id.toString() === session.user.id) {
-      return NextResponse.json({ 
-        error: 'Cannot delete your own account' 
+      return NextResponse.json({
+        error: 'Cannot delete your own account'
       }, { status: 400 });
     }
 
@@ -106,6 +106,33 @@ export async function DELETE(request, { params }) {
 
   } catch (error) {
     console.error('User deletion error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+// Add GET handler in the correct place
+export async function GET(request, { params }) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id } = params;
+    await connectDB();
+
+    const user = await User.findById(id).select('-password');
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      user
+    });
+  } catch (error) {
+    console.error('User fetch error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

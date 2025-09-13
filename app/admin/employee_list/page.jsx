@@ -236,7 +236,7 @@ export default function EmployeeList() {
                     <SelectValue placeholder="All roles" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All roles</SelectItem>
+                    <SelectItem value="" >All roles</SelectItem>
                     <SelectItem value="admin">Admin</SelectItem>
                     <SelectItem value="team-leader">Team Leader</SelectItem>
                     <SelectItem value="employee">Employee</SelectItem>
@@ -252,9 +252,9 @@ export default function EmployeeList() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">All departments</SelectItem>
-                    <SelectItem value="it">Information Technology</SelectItem>
-                    <SelectItem value="hr">Human Resources</SelectItem>
-                    <SelectItem value="finance">Finance</SelectItem>
+                    <SelectItem value="it">Software Developer</SelectItem>
+                    <SelectItem value="hr">Hardware Service</SelectItem>
+                    <SelectItem value="finance">Networking</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -266,7 +266,7 @@ export default function EmployeeList() {
                     <SelectValue placeholder="All statuses" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All statuses</SelectItem>
+                    <SelectItem value="" >All statuses</SelectItem>
                     <SelectItem value="true">Active</SelectItem>
                     <SelectItem value="false">Inactive</SelectItem>
                   </SelectContent>

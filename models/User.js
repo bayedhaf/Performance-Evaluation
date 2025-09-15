@@ -20,6 +20,8 @@ const userSchema = new mongoose.Schema({
   profileImage: { type: String },
   isActive: { type: Boolean, default: true },
   lastLogin: { type: Date },
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
   permissions: [{
     type: String,
     enum: [

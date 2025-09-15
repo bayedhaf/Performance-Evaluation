@@ -142,8 +142,9 @@ export default function DepartmentManagement() {
     <div className="min-h-screen bg-gray-100">
       <AdminstractureNavBar />
       
-      <div className="container mx-auto px-6 py-8 mt-20">
-        <div className="flex justify-between items-center mb-8">
+      <div className="container mx-auto px-4 sm:px-6 py-8 mt-20">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Department Management</h1>
             <p className="text-gray-600 mt-2">Manage your organization's departments</p>
@@ -151,12 +152,12 @@ export default function DepartmentManagement() {
           
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={resetForm} className="bg-indigo-600 hover:bg-indigo-700">
+              <Button onClick={resetForm} className="bg-indigo-600 hover:bg-indigo-700 w-full sm:w-auto">
                 <Plus className="w-4 h-4 mr-2" />
                 Add Department
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="w-[95%] sm:max-w-lg">
               <DialogHeader>
                 <DialogTitle>
                   {editingDepartment ? 'Edit Department' : 'Create New Department'}
@@ -200,7 +201,7 @@ export default function DepartmentManagement() {
                   <div className="text-red-600 text-sm">{error}</div>
                 )}
 
-                <div className="flex justify-end space-x-2">
+                <div className="flex flex-col sm:flex-row justify-end gap-2">
                   <Button
                     type="button"
                     variant="outline"
@@ -208,10 +209,11 @@ export default function DepartmentManagement() {
                       setIsCreateDialogOpen(false)
                       resetForm()
                     }}
+                    className="w-full sm:w-auto"
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700">
+                  <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 w-full sm:w-auto">
                     {editingDepartment ? 'Update' : 'Create'}
                   </Button>
                 </div>
@@ -220,7 +222,8 @@ export default function DepartmentManagement() {
           </Dialog>
         </div>
 
-        <Card>
+        
+        <Card className="mb-15">
           <CardHeader>
             <CardTitle>Departments ({departments.length})</CardTitle>
           </CardHeader>
@@ -231,59 +234,61 @@ export default function DepartmentManagement() {
                 <p>No departments found. Create your first department to get started.</p>
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Department</TableHead>
-                    <TableHead>Code</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Employees</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {departments.map((dept) => (
-                    <TableRow key={dept._id}>
-                      <TableCell className="font-medium">{dept.name}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{dept.code}</Badge>
-                      </TableCell>
-                      <TableCell className="max-w-xs truncate">
-                        {dept.description || 'No description'}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">
-                          {dept.employees?.length || 0} employees
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={dept.isActive ? "default" : "destructive"}>
-                          {dept.isActive ? 'Active' : 'Inactive'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleEdit(dept)}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => handleDelete(dept._id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+              <div className="overflow-x-auto">
+                <Table className="min-w-[700px]">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Department</TableHead>
+                      <TableHead>Code</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Employees</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {departments.map((dept) => (
+                      <TableRow key={dept._id}>
+                        <TableCell className="font-medium">{dept.name}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">{dept.code}</Badge>
+                        </TableCell>
+                        <TableCell className="max-w-xs truncate">
+                          {dept.description || 'No description'}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {dept.employees?.length || 0} employees
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={dept.isActive ? "default" : "destructive"}>
+                            {dept.isActive ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleEdit(dept)}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleDelete(dept._id)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             )}
           </CardContent>
         </Card>

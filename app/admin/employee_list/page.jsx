@@ -26,8 +26,7 @@ import {
   Dialog, 
   DialogContent, 
   DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
+  DialogTitle 
 } from '@/components/ui/dialog'
 import { 
   Search, 
@@ -36,7 +35,6 @@ import {
   Trash2, 
   UserPlus, 
   Users,
-  Eye,
   MoreHorizontal
 } from 'lucide-react'
 import {
@@ -102,7 +100,7 @@ export default function EmployeeList() {
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }))
-    setPagination(prev => ({ ...prev, page: 1 })) // Reset to first page
+    setPagination(prev => ({ ...prev, page: 1 }))
   }
 
   const handleEdit = (employee) => {
@@ -186,26 +184,27 @@ export default function EmployeeList() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 ">
+    <div className="min-h-screen bg-gray-100">
       <AdminstractureNavBar />
       
-      <div className="container mx-auto px-6 py-8 mt-20 mb-20">
-        <div className="flex justify-between items-center mb-8">
+      <div className="container mx-auto px-4 sm:px-6 py-6 mt-16 mb-16">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Employee Management</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Employee Management</h1>
             <p className="text-gray-600 mt-2">Manage your organization's employees</p>
           </div>
           
           <Button 
             onClick={() => window.location.href = '/admin/dashboard/newusers'}
-            className="bg-indigo-600 hover:bg-indigo-700"
+            className="bg-indigo-600 hover:bg-indigo-700 w-full sm:w-auto"
           >
             <UserPlus className="w-4 h-4 mr-2" />
             Add New Employee
           </Button>
         </div>
 
-       
+        {/* Filters */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -214,7 +213,7 @@ export default function EmployeeList() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <Label htmlFor="search">Search</Label>
                 <div className="relative">
@@ -236,7 +235,7 @@ export default function EmployeeList() {
                     <SelectValue placeholder="All roles" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="" >All roles</SelectItem>
+                    <SelectItem value="">All roles</SelectItem>
                     <SelectItem value="admin">Admin</SelectItem>
                     <SelectItem value="team-leader">Team Leader</SelectItem>
                     <SelectItem value="employee">Employee</SelectItem>
@@ -266,7 +265,7 @@ export default function EmployeeList() {
                     <SelectValue placeholder="All statuses" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="" >All statuses</SelectItem>
+                    <SelectItem value="">All statuses</SelectItem>
                     <SelectItem value="true">Active</SelectItem>
                     <SelectItem value="false">Inactive</SelectItem>
                   </SelectContent>
@@ -276,10 +275,10 @@ export default function EmployeeList() {
           </CardContent>
         </Card>
 
-      
+        {/* Employees Table */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
+            <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
               <span>Employees ({pagination.total})</span>
               <div className="text-sm text-gray-500">
                 Page {pagination.page} of {pagination.totalPages}
@@ -294,85 +293,87 @@ export default function EmployeeList() {
               </div>
             ) : (
               <>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Employee</TableHead>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Department</TableHead>
-                      <TableHead>Position</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {employees.map((employee) => (
-                      <TableRow key={employee._id}>
-                        <TableCell>
-                          <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                              <span className="text-sm font-medium text-gray-600">
-                                {employee.firstName?.[0]}{employee.lastName?.[0]}
-                              </span>
-                            </div>
-                            <div>
-                              <div className="font-medium">{employee.fullName}</div>
-                              <div className="text-sm text-gray-500">{employee.email}</div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{employee.employeeId}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={getRoleColor(employee.role)}>
-                            {employee.role}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {employee.department?.name || 'Not Assigned'}
-                        </TableCell>
-                        <TableCell>{employee.position}</TableCell>
-                        <TableCell>
-                          <Badge className={getStatusColor(employee.isActive)}>
-                            {employee.isActive ? 'Active' : 'Inactive'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreHorizontal className="w-4 h-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleEdit(employee)}>
-                                <Edit className="w-4 h-4 mr-2" />
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => handleDelete(employee._id)}
-                                className="text-red-600"
-                              >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Deactivate
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
+                <div className="overflow-x-auto">
+                  <Table className="min-w-[700px]">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Employee</TableHead>
+                        <TableHead>ID</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Department</TableHead>
+                        <TableHead>Position</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {employees.map((employee) => (
+                        <TableRow key={employee._id}>
+                          <TableCell>
+                            <div className="flex items-center space-x-3">
+                              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                                <span className="text-sm font-medium text-gray-600">
+                                  {employee.firstName?.[0]}{employee.lastName?.[0]}
+                                </span>
+                              </div>
+                              <div>
+                                <div className="font-medium">{employee.fullName}</div>
+                                <div className="text-sm text-gray-500">{employee.email}</div>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{employee.employeeId}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={getRoleColor(employee.role)}>
+                              {employee.role}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {employee.department?.name || 'Not Assigned'}
+                          </TableCell>
+                          <TableCell>{employee.position}</TableCell>
+                          <TableCell>
+                            <Badge className={getStatusColor(employee.isActive)}>
+                              {employee.isActive ? 'Active' : 'Inactive'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <MoreHorizontal className="w-4 h-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleEdit(employee)}>
+                                  <Edit className="w-4 h-4 mr-2" />
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                  onClick={() => handleDelete(employee._id)}
+                                  className="text-red-600"
+                                >
+                                  <Trash2 className="w-4 h-4 mr-2" />
+                                  Deactivate
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
 
-               
                 {pagination.totalPages > 1 && (
-                  <div className="flex justify-between items-center mt-6">
+                  <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-6">
                     <Button
                       variant="outline"
                       disabled={pagination.page === 1}
                       onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                      className="w-full sm:w-auto"
                     >
                       Previous
                     </Button>
@@ -385,6 +386,7 @@ export default function EmployeeList() {
                       variant="outline"
                       disabled={pagination.page === pagination.totalPages}
                       onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                      className="w-full sm:w-auto"
                     >
                       Next
                     </Button>
@@ -397,7 +399,7 @@ export default function EmployeeList() {
 
         {/* Edit Employee Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent>
+          <DialogContent className="w-[95%] sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Edit Employee: {editingEmployee?.fullName}</DialogTitle>
             </DialogHeader>
@@ -433,15 +435,16 @@ export default function EmployeeList() {
                 <div className="text-red-600 text-sm">{error}</div>
               )}
 
-              <div className="flex justify-end space-x-2">
+              <div className="flex flex-col sm:flex-row justify-end gap-2">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setIsEditDialogOpen(false)}
+                  className="w-full sm:w-auto"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700">
+                <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 w-full sm:w-auto">
                   Update Employee
                 </Button>
               </div>

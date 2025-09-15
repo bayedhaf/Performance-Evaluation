@@ -1,13 +1,12 @@
 'use client'
-import AdminEvaluationBehavioral from '@/components/forms/AdminEvaluationBehavioral'
-
+import TeamLeaderNavbar from '@/app/employee/shared/team-leadernavbar/TeamLeaderNavbar'
+import TeamLeaderPeerTaskForm from '@/components/forms/TeamLeaderPeerTaskForm'
 
 export default function Page() {
   return (
-  
-<div className="">
-      <AdminEvaluationBehavioral />
-</div>
-  
+    <div>
+      <TeamLeaderNavbar/>
+      <TeamLeaderPeerTaskForm />
+    </div>
   )
 }

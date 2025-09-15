@@ -105,6 +105,14 @@ const taskSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  isTeamTask: {
+    type: Boolean,
+    default: false
+  },
+  originalTaskId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Task'
+  },
   createdAt: {
     type: Date,
     default: Date.now

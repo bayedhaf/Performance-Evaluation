@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
@@ -84,7 +86,8 @@ export async function POST(request) {
       priority,
       category,
       dueDate,
-      evaluationCriteria
+      evaluationCriteria,
+      shareWithTeam
     } = body;
 
     // Validate assigned user
@@ -108,6 +111,7 @@ export async function POST(request) {
       }
     }
 
+    // Create task for the assigned user
     const task = new Task({
       title,
       description,
@@ -122,6 +126,36 @@ export async function POST(request) {
     });
 
     await task.save();
+
+    // If this is a team task and shareWithTeam is true, create copies for all team members
+    if (shareWithTeam && (team || assignedUser.team)) {
+      const teamId = team || assignedUser.team;
+      const teamMembers = await User.find({ 
+        team: teamId, 
+        isActive: true,
+        _id: { $ne: assignedTo } // Exclude the originally assigned user
+      });
+
+      // Create tasks for all other team members
+      const teamTasks = teamMembers.map(member => ({
+        title: `${title} (Team Task)`,
+        description: `${description} - Shared with team members`,
+        assignedTo: member._id,
+        assignedBy: session.user.id,
+        team: teamId,
+        department: department || assignedUser.department,
+        priority,
+        category,
+        dueDate,
+        evaluationCriteria,
+        isTeamTask: true,
+        originalTaskId: task._id
+      }));
+
+      if (teamTasks.length > 0) {
+        await Task.insertMany(teamTasks);
+      }
+    }
 
     const populatedTask = await Task.findById(task._id)
       .populate('assignedTo', 'firstName lastName email employeeId')

@@ -4,6 +4,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import Department from '@/models/Department';
+import Team from '@/models/Team';
 import bcrypt from 'bcryptjs';
 
 export async function POST(request) {
@@ -59,8 +60,33 @@ export async function POST(request) {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     let resolvedDepartment = null;
+    let assignedTeam = null;
+    
     if (department) {
       resolvedDepartment = await Department.findOne({ name: new RegExp(`^${department}$`, 'i') });
+      
+      // Create or find a team for this department
+      if (resolvedDepartment) {
+        // Check if there's already a default team for this department
+        let team = await Team.findOne({ 
+          department: resolvedDepartment._id, 
+          isActive: true 
+        }).sort({ createdAt: 1 }); // Get the first created team
+        
+        // If no team exists, create a default team for the department
+        if (!team) {
+          const teamCode = `${resolvedDepartment.code}-TEAM-001`;
+          team = await Team.create({
+            name: `${resolvedDepartment.name} Team`,
+            code: teamCode,
+            description: `Default team for ${resolvedDepartment.name} department`,
+            department: resolvedDepartment._id,
+            isActive: true
+          });
+        }
+        
+        assignedTeam = team._id;
+      }
     }
 
     const newUser = new User({
@@ -74,6 +100,7 @@ export async function POST(request) {
       address: `${country || ''} ${region || ''}`.trim(),
       employeeId,
       department: resolvedDepartment?._id,
+      team: assignedTeam, // Assign the team
       permissions: role === 'admin'
         ? ['manage_users', 'manage_departments', 'approve_results', 'view_reports']
         : role === 'team-leader'
@@ -92,8 +119,18 @@ export async function POST(request) {
 
     await newUser.save();
 
+    // Update department and team with the new user
     if (resolvedDepartment) {
       await Department.findByIdAndUpdate(resolvedDepartment._id, { $addToSet: { employees: newUser._id } });
+    }
+    
+    if (assignedTeam) {
+      await Team.findByIdAndUpdate(assignedTeam, { $addToSet: { members: newUser._id } });
+      
+      // If this user is a team leader, set them as the team leader
+      if (role === 'team-leader') {
+        await Team.findByIdAndUpdate(assignedTeam, { leader: newUser._id });
+      }
     }
 
     return NextResponse.json({

@@ -15,9 +15,16 @@ export default function PeerEvaluation() {
     async function fetchEmployees() {
       setLoading(true);
       try {
+        // load current user profile
+        const meRes = await fetch('/api/employee/profile');
+        const meData = meRes.ok ? await meRes.json() : null;
+        const myId = meData?.user?.id;
+
         const res = await fetch('/api/team/members');
         const data = await res.json();
-        setEmployees(Array.isArray(data.users) ? data.users : []);
+        const users = Array.isArray(data.users) ? data.users : [];
+        // exclude self from peer selection list
+        setEmployees(myId ? users.filter(u => (u._id || u.id) !== myId) : users);
       } catch (err) {
         setMessage(`❌ Error fetching employees: ${err.message}`);
       }
@@ -38,6 +45,7 @@ export default function PeerEvaluation() {
 
     setLoading(true);
     try {
+      // tasks come from team-leader assigned to the employee being evaluated
       const res = await fetch(`/api/tasks?assignedTo=${encodeURIComponent(empId)}&category=peer_evaluation`);
       const tasks = await res.json();
       if (res.ok) {

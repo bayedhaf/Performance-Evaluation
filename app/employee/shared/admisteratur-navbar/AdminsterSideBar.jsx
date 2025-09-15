@@ -6,7 +6,7 @@ import { MdDashboard } from "react-icons/md"
 import { GiStairsGoal } from "react-icons/gi"
 import { FaPeopleGroup } from "react-icons/fa6"
 import { TbReportSearch } from "react-icons/tb"
-import { IoSettings, IoPersonAdd } from "react-icons/io5"
+import { IoSettings} from "react-icons/io5"
 import Link from 'next/link'
 
 export default function AdminsterSideBar() {
@@ -59,7 +59,7 @@ export default function AdminsterSideBar() {
 
       <nav className="flex flex-col gap-2 py-8 px-4 text-gray-700 flex-1">
         <SidebarLink href="/admin/dashboard" icon={<MdDashboard />} label="Dashboard" />
-        <SidebarLink href="/admin/dashboard/newusers" icon={<IoPersonAdd />} label="Register New Employee" />
+       
         <SidebarLink href="/admin/department" icon={<GiStairsGoal />} label="Departments" />
         <SidebarLink href="/admin/employee_list" icon={<FaPeopleGroup />} label="Employees" />
         <SidebarLink href="/report" icon={<TbReportSearch />} label="Reports" />

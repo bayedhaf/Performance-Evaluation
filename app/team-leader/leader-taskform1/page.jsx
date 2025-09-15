@@ -1,14 +1,12 @@
 import TeamLeaderNavbar from '@/app/employee/shared/team-leadernavbar/TeamLeaderNavbar'
-import AdminEvaluationForm from '@/components/forms/AdminEvaluationForm'
+import TeamLeaderTaskForm from '@/components/forms/TeamLeaderTaskForm'
 import React from 'react'
 
-export default function TeamLeaderTaskForm() {
+export default function TeamLeaderTaskFormPage() {
   return (
-
-
     <div>
         <TeamLeaderNavbar/>
-        <AdminEvaluationForm/>
+        <TeamLeaderTaskForm/>
     </div>
   )
 }

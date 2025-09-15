@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
@@ -25,13 +27,29 @@ export async function GET() {
       teamId = me?.team;
     }
 
+    // If user has no team, return all users from their department as fallback
+    let members;
     if (!teamId) {
-      return NextResponse.json({ users: [] });
+      // Get user's department and return all active users from that department
+      const currentUser = await User.findById(session.user.id).select('department').populate('department');
+      if (currentUser?.department) {
+        members = await User.find({ 
+          department: currentUser.department._id, 
+          isActive: true,
+          _id: { $ne: session.user.id } // Exclude current user
+        })
+          .select('firstName lastName email profileImage position role')
+          .sort({ firstName: 1, lastName: 1 });
+      } else {
+        // If no department either, return empty array
+        return NextResponse.json({ users: [] });
+      }
+    } else {
+      // Get team members
+      members = await User.find({ team: teamId, isActive: true })
+        .select('firstName lastName email profileImage position role')
+        .sort({ firstName: 1, lastName: 1 });
     }
-
-    const members = await User.find({ team: teamId, isActive: true })
-      .select('firstName lastName email profileImage position role')
-      .sort({ firstName: 1, lastName: 1 });
 
     const users = members.map((u) => ({
       _id: u._id,

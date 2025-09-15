@@ -5,7 +5,10 @@ import connectDB from '@/lib/mongodb';
 import Department from '@/models/Department';
 import User from '@/models/User';
 
-export async function GET(request, { params }) {
+export const dynamic = 'force-dynamic';
+
+// GET department by ID
+export async function GET(req, { params }) {
   try {
     const session = await getServerSession(authOptions);
     
@@ -13,20 +16,28 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const id = params?.id;
+    if (!id) return NextResponse.json({ error: 'Department ID is required' }, { status: 400 });
 
     await connectDB();
-    
-    const department = await Department.findById(id)
-      .populate('employees', 'firstName lastName email employeeId position role');
 
-    if (!department) {
-      return NextResponse.json({ error: 'Department not found' }, { status: 404 });
-    }
+    const department = await Department.findById(id).populate(
+      'employees', 'firstName lastName email employeeId position role'
+    );
+
+    if (!department) return NextResponse.json({ error: 'Department not found' }, { status: 404 });
 
     return NextResponse.json({
       success: true,
-      department: department
+      department: {
+        id: department._id,
+        name: department.name,
+        code: department.code,
+        description: department.description,
+        isActive: department.isActive,
+        employeeCount: department.employees.length,
+        employees: department.employees
+      }
     });
 
   } catch (error) {
@@ -35,7 +46,8 @@ export async function GET(request, { params }) {
   }
 }
 
-export async function PUT(request, { params }) {
+// PUT department by ID
+export async function PUT(req, { params }) {
   try {
     const session = await getServerSession(authOptions);
     
@@ -43,35 +55,28 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
-    const body = await request.json();
+    const id = params?.id;
+    if (!id) return NextResponse.json({ error: 'Department ID is required' }, { status: 400 });
+
+    const body = await req.json();
     const { name, code, description, isActive } = body;
 
     await connectDB();
 
-    // Check if department exists
     const department = await Department.findById(id);
-    if (!department) {
-      return NextResponse.json({ error: 'Department not found' }, { status: 404 });
-    }
+    if (!department) return NextResponse.json({ error: 'Department not found' }, { status: 404 });
 
-    // Check if new name/code conflicts with existing departments
+    // Check for name/code conflicts
     if (name || code) {
       const existingDept = await Department.findOne({
-        $and: [
-          { _id: { $ne: id } },
-          { $or: [{ name: name || department.name }, { code: code || department.code }] }
-        ]
+        _id: { $ne: id },
+        $or: [{ name: name || department.name }, { code: code || department.code }]
       });
-      
       if (existingDept) {
-        return NextResponse.json({ 
-          error: 'Department with this name or code already exists' 
-        }, { status: 400 });
+        return NextResponse.json({ error: 'Department with this name or code already exists' }, { status: 400 });
       }
     }
 
-    // Update department
     const updateData = {};
     if (name) updateData.name = name;
     if (code) updateData.code = code;
@@ -84,10 +89,10 @@ export async function PUT(request, { params }) {
       { new: true, runValidators: true }
     );
 
-    return NextResponse.json({
-      success: true,
-      message: 'Department updated successfully',
-      department: updatedDepartment
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Department updated successfully', 
+      department: updatedDepartment 
     });
 
   } catch (error) {
@@ -96,7 +101,8 @@ export async function PUT(request, { params }) {
   }
 }
 
-export async function DELETE(request, { params }) {
+// DELETE department by ID
+export async function DELETE(req, { params }) {
   try {
     const session = await getServerSession(authOptions);
     
@@ -104,31 +110,25 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const id = params?.id;
+    if (!id) return NextResponse.json({ error: 'Department ID is required' }, { status: 400 });
 
     await connectDB();
 
-    // Check if department exists
     const department = await Department.findById(id);
-    if (!department) {
-      return NextResponse.json({ error: 'Department not found' }, { status: 404 });
-    }
+    if (!department) return NextResponse.json({ error: 'Department not found' }, { status: 404 });
 
-    // Check if department has employees
     const employeeCount = await User.countDocuments({ department: id });
     if (employeeCount > 0) {
-      return NextResponse.json({ 
-        error: `Cannot delete department. It has ${employeeCount} employee(s) assigned.` 
+      return NextResponse.json({
+        error: `Cannot delete department. It has ${employeeCount} employee(s) assigned.`
       }, { status: 400 });
     }
 
-    // Soft delete - set isActive to false
+    // Soft delete
     await Department.findByIdAndUpdate(id, { isActive: false });
 
-    return NextResponse.json({
-      success: true,
-      message: 'Department deactivated successfully'
-    });
+    return NextResponse.json({ success: true, message: 'Department deactivated successfully' });
 
   } catch (error) {
     console.error('Department deletion error:', error);

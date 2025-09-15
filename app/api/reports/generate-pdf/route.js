@@ -81,7 +81,7 @@ export async function POST(request) {
             totalEvaluations: userEvaluations.length,
             totalTasks: userTasks.length,
             averageScore: userEvaluations.length > 0 
-              ? userEvaluations.reduce((sum, eval) => sum + (eval.overallScore || 0), 0) / userEvaluations.length 
+              ? userEvaluations.reduce((sum, evaluate) => sum + (evaluate.overallScore || 0), 0) / userEvaluations.length 
               : 0,
             completedTasks: userTasks.filter(task => task.status === 'completed').length
           }
@@ -129,7 +129,7 @@ export async function POST(request) {
             totalEvaluations: teamEvaluations.length,
             totalTasks: teamTasks.length,
             averageScore: teamEvaluations.length > 0 
-              ? teamEvaluations.reduce((sum, eval) => sum + (eval.overallScore || 0), 0) / teamEvaluations.length 
+              ? teamEvaluations.reduce((sum, enaluate) => sum + (enaluate.overallScore || 0), 0) / teamEvaluations.length 
               : 0,
             completedTasks: teamTasks.filter(task => task.status === 'completed').length
           }
@@ -177,7 +177,7 @@ export async function POST(request) {
             totalEvaluations: deptEvaluations.length,
             totalTasks: deptTasks.length,
             averageScore: deptEvaluations.length > 0 
-              ? deptEvaluations.reduce((sum, eval) => sum + (eval.overallScore || 0), 0) / deptEvaluations.length 
+              ? deptEvaluations.reduce((sum, enaluate) => sum + (enaluate.overallScore || 0), 0) / deptEvaluations.length 
               : 0,
             completedTasks: deptTasks.filter(task => task.status === 'completed').length
           }

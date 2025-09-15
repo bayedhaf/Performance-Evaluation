@@ -6,6 +6,9 @@ import Department from '@/models/Department';
 import Team from '@/models/Team';
 import bcrypt from 'bcryptjs';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export const authOptions = {
   providers: [
     CredentialsProvider({

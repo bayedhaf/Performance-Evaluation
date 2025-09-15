@@ -222,7 +222,7 @@ export default function DepartmentManagement() {
           </Dialog>
         </div>
 
-        {/* Departments Table */}
+        
         <Card className="mb-15">
           <CardHeader>
             <CardTitle>Departments ({departments.length})</CardTitle>

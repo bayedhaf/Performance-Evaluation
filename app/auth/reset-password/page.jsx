@@ -10,30 +10,55 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import { useState } from 'react'
-
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 
-export default function Page() {
-  const [form, setForm] = useState({ email: '' })
+export default function ResetPasswordPage() {
+  const [form, setForm] = useState({ password: '', confirmPassword: '' })
   const [pending, setPending] = useState(false)
   const [message, setMessage] = useState('')
   const [success, setSuccess] = useState(false)
+  const [token, setToken] = useState('')
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const tokenParam = searchParams.get('token')
+    if (tokenParam) {
+      setToken(tokenParam)
+    } else {
+      setMessage('Invalid reset link. Please request a new password reset.')
+    }
+  }, [searchParams])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    
+    if (form.password !== form.confirmPassword) {
+      setMessage('Passwords do not match')
+      return
+    }
+
+    if (form.password.length < 6) {
+      setMessage('Password must be at least 6 characters long')
+      return
+    }
+
     setPending(true)
     setMessage('')
-    setSuccess(false)
 
     try {
-      const response = await fetch('/api/auth/forgot-password', {
+      const response = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: form.email }),
+        body: JSON.stringify({ 
+          token: token,
+          password: form.password 
+        }),
       })
 
       const data = await response.json()
@@ -41,11 +66,11 @@ export default function Page() {
       if (response.ok) {
         setSuccess(true)
         setMessage(data.message)
-        if (data.resetUrl && process.env.NODE_ENV === 'development') {
-          setMessage(data.message + ' (Development: ' + data.resetUrl + ')')
-        }
+        setTimeout(() => {
+          router.push('/auth/login')
+        }, 2000)
       } else {
-        setMessage(data.error || 'Failed to send reset instructions')
+        setMessage(data.error || 'Failed to reset password')
       }
     } catch (error) {
       setMessage('Network error. Please try again.')
@@ -67,6 +92,7 @@ export default function Page() {
       <div className="w-full max-w-md">
       
         <div className="flex flex-col items-center justify-center text-center mb-8">
+          
           <div className="relative mb-4">
             <div className="absolute -inset-2 bg-gradient-to-r from-indigo-400 to-blue-500 rounded-full blur opacity-75 animate-pulse"></div>
             <Image
@@ -88,10 +114,10 @@ export default function Page() {
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-400 to-blue-500"></div>
           <CardHeader className="space-y-3 pb-4">
             <CardTitle className="text-2xl font-bold text-center text-gray-800">
-              Reset Your Password
+              Set New Password
             </CardTitle>
             <CardDescription className="text-center text-gray-500">
-              Enter your email address and we'll send you instructions to reset your password.
+              Enter your new password below.
             </CardDescription>
           </CardHeader>
 
@@ -99,12 +125,25 @@ export default function Page() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Input
-                  type="email"
-                  name="email"
+                  type="password"
+                  name="password"
                   disabled={pending}
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  placeholder="Enter your email address"
+                  value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  placeholder="Enter new password"
+                  className="py-5 px-4 border-gray-300 focus:border-indigo-400 focus:ring-indigo-400 transition-all duration-200"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Input
+                  type="password"
+                  name="confirmPassword"
+                  disabled={pending}
+                  value={form.confirmPassword}
+                  onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+                  placeholder="Confirm new password"
                   className="py-5 px-4 border-gray-300 focus:border-indigo-400 focus:ring-indigo-400 transition-all duration-200"
                   required
                 />
@@ -112,7 +151,7 @@ export default function Page() {
              
               <Button
                 type="submit"
-                disabled={pending}
+                disabled={pending || !token}
                 className="w-full py-5 bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white font-medium rounded-md transition-all duration-200 transform hover:-translate-y-0.5 shadow-md hover:shadow-lg"
               >
                 {pending ? (
@@ -121,9 +160,9 @@ export default function Page() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Processing...
+                    Resetting...
                   </span>
-                ) : "Send Reset Instructions"}
+                ) : "Reset Password"}
               </Button>
             </form>
 
@@ -132,6 +171,7 @@ export default function Page() {
                 success ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
               }`}>
                 {message}
+                {success && <p className="text-sm mt-2">Redirecting to login page...</p>}
               </div>
             )}
 
@@ -155,3 +195,4 @@ export default function Page() {
     </div>
   )
 }
+

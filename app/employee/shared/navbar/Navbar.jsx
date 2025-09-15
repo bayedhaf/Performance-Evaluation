@@ -4,44 +4,46 @@ import React, { useState } from 'react'
 import { IoMdMenu } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
 import Link from 'next/link'
-import { Card} from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { IoMdPersonAdd } from "react-icons/io"
 import Image from 'next/image'
+
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navLinks = [
-    { name: 'My Result', href: '/myresault' },
-    { name: 'Complaints', href: '/complien' },
+    { name: 'Home', href: '/employee/employee-dashboard' },
+    { name: 'My Result', href: '/employee/employee-result' },
+
   ]
 
   return (
-    <Card className="w-full bg-[#8D92EB] text-white shadow-md rounded-none px-6 py-4 z-50 relative">
-      <nav className='flex items-center justify-between px-4 py-1 ml-14 mr-14'>
-         <div className="flex items-center gap-2">
-                
-        <Link
-          href="/"
-          className="font-bold text-2xl tracking-wide hover:text-blue-200 transition"
-        >
-                  <Image
-                    className='rounded-full'
-                    src='/image/astuLogo.png'
-                    height={50}
-                    width={50}
-                    alt='ASTU'
-                  />
-                <span className='text-xl font-semibold'>Employer Dashboard</span>
-                </Link> 
-                  </div>
-      
-      <div className="hidden md:flex gap-6 items-center">
-          <ul className="flex gap-6 items-center">
+    <Card className="w-full bg-[#8D92EB] text-white shadow-lg rounded-none px-6 py-4 z-50 relative">
+      <nav className="flex items-center justify-between px-4 py-1 ml-6 mr-6">
+        
+     
+        <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
+            <Image
+              className="rounded-full shadow-md"
+              src="/image/astuLogo.png"
+              height={48}
+              width={48}
+              alt="ASTU"
+            />
+            <span className="text-xl md:text-2xl font-bold tracking-wide drop-shadow-sm">
+              Employer Dashboard
+            </span>
+          </Link>
+        </div>
+
+        <div className="hidden md:flex gap-8 items-center">
+          <ul className="flex gap-8 items-center">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="hover:text-blue-300 text-lg transition"
+                  className="relative text-lg font-medium after:content-[''] after:absolute after:w-0 after:h-[2px] after:left-0 after:bottom-[-4px] after:bg-white after:transition-all after:duration-300 hover:after:w-full"
                 >
                   {link.name}
                 </Link>
@@ -50,29 +52,30 @@ export default function Navbar() {
           </ul>
           <Link
             href="/profile"
-            className="hover:text-blue-300 text-lg font-medium transition"
+            className="p-2 rounded-full bg-white/20 hover:scale-105 transition-transform duration-300 shadow-md"
           >
-            <IoMdPersonAdd/>
+            <IoMdPersonAdd size={22} />
           </Link>
         </div>
 
-        
+      
         <div
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden cursor-pointer text-2xl text-white"
+          className="md:hidden cursor-pointer text-3xl text-white"
         >
           {menuOpen ? <MdCancel /> : <IoMdMenu />}
         </div>
+      </nav>
 
-           
+     
       {menuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white text-blue-900 shadow-md py-4 z-50">
-          <ul className="flex flex-col gap-4 px-6">
+        <div className="md:hidden absolute top-full left-0 w-full bg-white/95 text-blue-900 shadow-lg py-6 z-50 rounded-b-lg animate-fadeIn">
+          <ul className="flex flex-col gap-6 px-8 font-medium">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="text-lg hover:text-blue-700 transition"
+                  className="block text-lg transition-transform hover:scale-105"
                   onClick={() => setMenuOpen(false)}
                 >
                   {link.name}
@@ -82,7 +85,7 @@ export default function Navbar() {
             <li>
               <Link
                 href="/profile"
-                className="text-lg hover:text-blue-700 transition"
+                className="block text-lg transition-transform hover:scale-105"
                 onClick={() => setMenuOpen(false)}
               >
                 Profile
@@ -91,9 +94,6 @@ export default function Navbar() {
           </ul>
         </div>
       )}
-   </nav>
-
-  
     </Card>
   )
 }

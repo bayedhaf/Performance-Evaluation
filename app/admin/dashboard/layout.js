@@ -5,53 +5,38 @@ import ToggleAdminsterSideBar from '@/app/employee/shared/admisteratur-navbar/To
 import React, { useState } from 'react'
 import { IoSearch } from "react-icons/io5"
 
-export default function DashboardLayout({ children, complain, report, newuser }) {
+export default function DashboardLayout({ children }) {
   const [search, setSearch] = useState('');
 
   return (
-    <div className="flex flex-col min-h-screen bg-white text-gray-900">
-      {/* Fixed Header */}
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-indigo-100 via-white to-indigo-200 text-gray-900">
       <header className="w-full fixed top-0 z-50 shadow-md bg-white">
         <AdminstractureNavBar />
       </header>
 
-      {/* Main Content Area */}
-      <div className="flex flex-1 mt-16">
-        {/* Sidebar */}
-        <aside className="w-64 bg-gray-100 border-r mt-0 hidden md:block">
+      <div className="flex flex-1 mt-20">
+        <aside className="bg-gray-100 min-w-[70px] md:min-w-[220px] border-r border-gray-200 shadow-sm">
           <ToggleAdminsterSideBar />
         </aside>
 
-        {/* Main Content */}
-        <main className="flex-1 p-4 sm:p-8 md:p-12 lg:p-16 overflow-y-auto bg-gray-50">
-          {/* Search Bar */}
-          <div className="mb-8 flex items-center gap-3">
-            <IoSearch className="text-xl text-gray-600" />
-            <label htmlFor="search" className="sr-only">Search Tasks</label>
-            <input
-              id="search"
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search tasks"
-              className="w-full max-w-md p-2 rounded-full border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
-
-          {/* Default dashboard content including parallel routes */}
-          <div>
-            {/* Render default dashboard content */}
-            {children}
-
-            {/* Render parallel routes as part of the default dashboard */}
-            <div className="flex flex-col sm:flex-row justify-around items-center gap-6 mt-6">
-              <div className="flex flex-col justify-around items-center gap-6 w-full sm:w-auto">
-                {report && <div className="w-full sm:w-auto">{report}</div>}
-                {complain && <div className="w-full sm:w-auto">{complain}</div>}
-              </div>
-              {newuser && <div className="w-full sm:w-auto">{newuser}</div>}
+        <main className="flex-1 p-4 sm:p-8 md:p-12 lg:p-16 overflow-y-auto bg-gray-50 rounded-tl-3xl">
+        
+           <section className="w-full max-w-5xl mx-auto">
+           <div className=" flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+            <div className="flex items-center w-full max-w-md bg-white rounded-full shadow border border-gray-300 px-4 py-2">
+              <IoSearch className="text-2xl text-indigo-500 mr-2" />
+              <input
+                id="search"
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search Employee"
+                className="w-full bg-transparent outline-none text-gray-700 placeholder-gray-400"
+              />
             </div>
-          </div>
+         </div>
+            {children}
+          </section>
         </main>
       </div>
     </div>

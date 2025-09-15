@@ -12,14 +12,12 @@ export default function AdminstractureNavBar() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navLinks = [
-    { name: 'Dashboard', href: '/dashboard' },
-    { name: 'Reports', href: '/reports' },
-    { name: 'Employees', href: '/employee' },
-    { name: 'Department', href: '/deparment' },
+    { name: 'Dashboard', href: '/admin/dashboard' },
+ 
   ]
 
   return (
-    <Card className='w-full bg-[#8D92EB] text-white shadow-md rounded-none px-6 py-4 z-50 relative'>
+    <Card className='w-full bg-[#8D92EB] text-white shadow-md rounded-none px-6 py-4 top-0 z-50 relative'>
       <nav className='flex items-center justify-between px-4 py-1 ml-14 mr-14'>
        
         <div className="flex items-center gap-2">
@@ -29,31 +27,34 @@ export default function AdminstractureNavBar() {
             height={50}
             width={50}
             alt='ASTU'
+            sizes="50px"
           />
           <span className='text-xl font-semibold'>ADMINISTERATUR</span>
         </div>
 
        
-        <ul className='hidden md:flex gap-6 text-white'>
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <Link href={link.href} className='hover:underline'>
-                {link.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
+     
 
       
-        <div className='hidden md:block'>
-          <Link href='/profile'>
-            <IoMdPersonAdd className='text-2xl' />
-          </Link>
-        </div>
+       <div className="hidden md:flex items-center gap-6">
+  <ul className="hidden md:flex gap-6 text-white">
+    {navLinks.map((link) => (
+      <li key={link.href}>
+        <Link href={link.href} className="hover:underline">
+          {link.name}
+        </Link>
+      </li>
+    ))}
+  </ul>
+  <Link href="/profile">
+    <IoMdPersonAdd className="text-2xl" />
+  </Link>
+</div>
+
 
    
         <div className='md:hidden text-2xl cursor-pointer' onClick={() => setMenuOpen(!menuOpen)}>
-          {menuOpen ? <MdCancel /> : <IoMdMenu />}
+          {menuOpen ? <MdCancel className='text-black'/> : <IoMdMenu className='text-black' />}
         </div>
       </nav>
 

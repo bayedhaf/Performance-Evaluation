@@ -13,7 +13,7 @@ export default function NewUserCreationForms() {
     phone: '',
     country: '',
     region: '',
-    photo: null,
+    photo: null, // ✅ keep as photo
     position: '',
     role: '',
     level: '',
@@ -26,6 +26,7 @@ export default function NewUserCreationForms() {
     emgContact: '',
     emgJob: '',
   })
+  const [preview, setPreview] = useState(null) // ✅ image preview
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
 
@@ -35,6 +36,9 @@ export default function NewUserCreationForms() {
       ...prev,
       [name]: files ? files[0] : value,
     }))
+    if (name === 'photo' && files?.[0]) {
+      setPreview(URL.createObjectURL(files[0])) // ✅ preview
+    }
   }
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, 3))
@@ -47,12 +51,20 @@ export default function NewUserCreationForms() {
     try {
       const formData = new FormData()
       Object.entries(form).forEach(([key, value]) => {
-        if (value) formData.append(key, value)
+        if (value) {
+          if (key === 'photo') {
+            formData.append('profileImage', value) // ✅ map photo → profileImage
+          } else {
+            formData.append(key, value)
+          }
+        }
       })
+
       const res = await fetch('/api/new-user', {
         method: 'POST',
         body: formData,
       })
+
       if (res.ok) {
         setMessage('✅ User registered successfully!')
         setForm({
@@ -77,6 +89,7 @@ export default function NewUserCreationForms() {
           emgContact: '',
           emgJob: '',
         })
+        setPreview(null)
         setStep(1)
       } else {
         setMessage('❌ Failed to register user.')
@@ -94,6 +107,7 @@ export default function NewUserCreationForms() {
         <p className="text-gray-500 mt-2">Employee Registration Form</p>
       </header>
 
+      {/* Progress steps */}
       <div className="w-full max-w-4xl flex items-center justify-between mb-6">
         {[1, 2, 3].map((s) => (
           <div key={s} className="flex-1 flex items-center">
@@ -119,6 +133,7 @@ export default function NewUserCreationForms() {
         className="w-full max-w-4xl bg-white p-8 rounded-2xl shadow-lg border border-gray-200"
         encType="multipart/form-data"
       >
+        {/* Step 1: Personal Info */}
         {step === 1 && (
           <fieldset className="space-y-5">
             <legend className="font-semibold text-lg text-gray-800 mb-4">
@@ -169,12 +184,28 @@ export default function NewUserCreationForms() {
                 name="photo"
                 accept="image/*"
                 onChange={handleChange}
-                className="mt-1 w-full text-sm text-gray-600 border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="mt-1 w-full text-sm text-gray-600 border border-gray-300 rounded-lg
+                  file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-600
+                  file:text-white hover:file:bg-indigo-700 focus:ring-2 focus:ring-indigo-500
+                  focus:outline-none"
               />
             </label>
+
+          
+            {preview && (
+              <div className="mt-2">
+                <p className="text-sm text-gray-500">Image Preview:</p>
+                <img
+                  src={preview}
+                  alt="Profile Preview"
+                  className="w-32 h-32 object-cover rounded-full mt-1 border"
+                />
+              </div>
+            )}
           </fieldset>
         )}
 
+        
         {step === 2 && (
           <fieldset className="space-y-5">
             <legend className="font-semibold text-lg text-gray-800 mb-4">
@@ -204,6 +235,7 @@ export default function NewUserCreationForms() {
           </fieldset>
         )}
 
+      
         {step === 3 && (
           <fieldset className="space-y-5">
             <legend className="font-semibold text-lg text-gray-800 mb-4">
@@ -230,6 +262,7 @@ export default function NewUserCreationForms() {
           </fieldset>
         )}
 
+        {/* Buttons */}
         <div className="flex mt-8 gap-4">
           {step > 1 && (
             <button

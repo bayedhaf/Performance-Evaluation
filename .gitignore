@@ -29,6 +29,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+#file upload folder
+/public/uploads
 
 # env files (can opt-in for committing if needed)
 .env*

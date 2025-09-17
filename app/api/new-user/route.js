@@ -6,12 +6,14 @@ import User from '@/models/User';
 import Department from '@/models/Department';
 import Team from '@/models/Team';
 import bcrypt from 'bcryptjs';
+import { writeFile } from 'fs/promises';
+import path from 'path';
 
 export async function POST(request) {
   try {
     const session = await getServerSession(authOptions);
 
-    // 🔒 Only admin can register new users
+
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -26,7 +28,21 @@ export async function POST(request) {
     const country = formData.get('country');
     const region = formData.get('region');
 
-    // Metadata
+    let imageUrl = '/image/profile.png'; 
+    const file = formData.get('profileImage');
+
+    if (file && typeof file === 'object' && file.size > 0) {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+
+      
+      const fileName = `${Date.now()}-${file.name}`;
+      const filePath = path.join(process.cwd(), 'public/uploads', fileName);
+      await writeFile(filePath, buffer);
+
+      imageUrl = `/uploads/${fileName}`; 
+    }
+
     const gender = formData.get('gender');
     const dob = formData.get('dob');
     const level = formData.get('level');
@@ -43,7 +59,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Split full name
+    
     const [firstName, ...rest] = fullName.trim().split(' ');
     const lastName = rest.length > 0 ? rest.join(' ') : 'Unknown';
 
@@ -65,15 +81,12 @@ export async function POST(request) {
     if (department) {
       resolvedDepartment = await Department.findOne({ name: new RegExp(`^${department}$`, 'i') });
       
-      // Create or find a team for this department
       if (resolvedDepartment) {
-        // Check if there's already a default team for this department
         let team = await Team.findOne({ 
           department: resolvedDepartment._id, 
           isActive: true 
-        }).sort({ createdAt: 1 }); // Get the first created team
+        }).sort({ createdAt: 1 });
         
-        // If no team exists, create a default team for the department
         if (!team) {
           const teamCode = `${resolvedDepartment.code}-TEAM-001`;
           team = await Team.create({
@@ -94,13 +107,14 @@ export async function POST(request) {
       lastName,
       email: email.toLowerCase(),
       password,
+      profileImage: imageUrl, 
       role,
       position,
       phone,
       address: `${country || ''} ${region || ''}`.trim(),
       employeeId,
       department: resolvedDepartment?._id,
-      team: assignedTeam, // Assign the team
+      team: assignedTeam,
       permissions: role === 'admin'
         ? ['manage_users', 'manage_departments', 'approve_results', 'view_reports']
         : role === 'team-leader'
@@ -119,15 +133,12 @@ export async function POST(request) {
 
     await newUser.save();
 
-    // Update department and team with the new user
     if (resolvedDepartment) {
       await Department.findByIdAndUpdate(resolvedDepartment._id, { $addToSet: { employees: newUser._id } });
     }
     
     if (assignedTeam) {
       await Team.findByIdAndUpdate(assignedTeam, { $addToSet: { members: newUser._id } });
-      
-      // If this user is a team leader, set them as the team leader
       if (role === 'team-leader') {
         await Team.findByIdAndUpdate(assignedTeam, { leader: newUser._id });
       }
@@ -139,10 +150,11 @@ export async function POST(request) {
       user: {
         id: newUser._id,
         employeeId: newUser.employeeId,
-        fullName: newUser.fullName,
+        fullName: `${newUser.firstName} ${newUser.lastName}`,
         email: newUser.email,
         role: newUser.role,
-        position: newUser.position
+        position: newUser.position,
+        profileImage: newUser.profileImage
       }
     });
   } catch (err) {

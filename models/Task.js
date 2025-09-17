@@ -125,7 +125,6 @@ const taskSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Calculate total score based on evaluation criteria
 taskSchema.virtual('totalScore').get(function() {
   if (!this.evaluationCriteria || this.evaluationCriteria.length === 0) {
     return this.score || 0;
@@ -144,7 +143,7 @@ taskSchema.virtual('totalScore').get(function() {
   return totalWeight > 0 ? Math.round((totalScore / totalWeight) * 100) : 0;
 });
 
-// Ensure virtual fields are serialized
+
 taskSchema.set('toJSON', {
   virtuals: true
 });

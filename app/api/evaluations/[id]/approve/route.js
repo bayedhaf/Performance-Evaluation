@@ -3,9 +3,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
 import Evaluation from '@/models/Evaluation';
-import User from '@/models/User'; // Added missing import for User
+import User from '@/models/User';
 
-// POST approve/reject evaluation
+
 export async function POST(request, { params }) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,7 +14,6 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Only admins and team leaders can approve evaluations
     if (!['admin', 'team-leader'].includes(session.user.role)) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
@@ -41,9 +40,9 @@ export async function POST(request, { params }) {
         team: session.user.team._id || session.user.team 
       }).select('_id');
       
-      const teamMemberIds = teamMembers.map(member => member._id);
+      const teamMemberIds = teamMembers.map(member => member._id.toString());
       
-      if (!teamMemberIds.includes(evaluation.evaluatee)) {
+      if (!teamMemberIds.includes(evaluation.evaluatee.toString())) {
         return NextResponse.json({ error: 'Can only approve evaluations in your team' }, { status: 403 });
       }
     }

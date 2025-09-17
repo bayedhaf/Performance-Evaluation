@@ -10,6 +10,7 @@ export default function ProfilePage() {
   const { data: session, status } = useSession()
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [imgSrc, setImgSrc] = useState('/image/profile.png')
 
   useEffect(() => {
     if (status === 'loading') return
@@ -19,17 +20,23 @@ export default function ProfilePage() {
       return
     }
 
-   
-    setUser({
-      fullName: session.user.fullName || `${session.user.firstName} ${session.user.lastName}`,
+    const fullName =
+      session.user.fullName ||
+      `${session.user.firstName || ''} ${session.user.lastName || ''}`.trim()
+
+    const userData = {
+      fullName: fullName ,
       email: session.user.email,
       position: session.user.position || 'Employee',
       photo: session.user.profileImage || '/image/profile.png',
       role: session.user.role,
-      employeeId: session.user.employeeId,
+      employeeId: session.user.employeeId || 'Not Assigned',
       department: session.user.department?.name || 'Not Assigned',
-      team: session.user.team?.name || 'Not Assigned'
-    })
+      team: session.user.team?.name || 'Not Assigned',
+    }
+
+    setUser(userData)
+    setImgSrc(userData.photo)
     setLoading(false)
   }, [session, status, router])
 
@@ -59,20 +66,18 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-10">
-      <div className="bg-white rounded-2xl shadow-lg max-w-md w-full p-6">
+      <div className="bg-white rounded-2xl shadow-lg max-w-md w-full p-6 mb-10">
         <div className="flex flex-col items-center">
           <Image
-            src={user.photo}
+            src={imgSrc}
             alt="Profile Picture"
             width={120}
             height={120}
             className="rounded-full mb-4 object-cover"
             sizes="120px"
-            onError={(e) => {
-              e.target.src = '/image/profile.png'
-            }}
+            onError={() => setImgSrc('/image/profile.png')}
           />
-          <h2 className="text-2xl font-bold text-gray-800">{user.fullName}</h2>
+          <h3 className="text-2xl font-bold text-gray-800">{user.fullName}</h3>
           <p className="text-gray-600">{user.position}</p>
           <p className="text-sm text-indigo-600 font-medium">{user.role}</p>
         </div>
@@ -80,7 +85,7 @@ export default function ProfilePage() {
         <div className="mt-6 space-y-4">
           <div>
             <h3 className="text-gray-700 font-semibold">Employee ID</h3>
-            <p className="text-gray-600">{user.employeeId || 'Not Assigned'}</p>
+            <p className="text-gray-600">{user.employeeId}</p>
           </div>
           <div>
             <h3 className="text-gray-700 font-semibold">Email</h3>

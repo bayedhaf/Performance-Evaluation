@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
+import { uploadBufferToS3 } from '@/lib/s3';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -58,9 +59,13 @@ export async function PUT(request) {
 
     // Handle profile image upload if provided
     const photo = formData.get('photo');
-    if (photo && photo instanceof File) {
-      // For now, we'll store the filename. In production, you'd upload to cloud storage
-      updateData.profileImage = `/uploads/${photo.name}`;
+    if (photo && typeof photo === 'object' && photo.size > 0) {
+      const bytes = await photo.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const safeName = photo.name?.replace(/[^a-zA-Z0-9._-]/g, '_') || 'photo.bin';
+      const key = `uploads/${Date.now()}-${safeName}`;
+      const contentType = photo.type || 'application/octet-stream';
+      updateData.profileImage = await uploadBufferToS3({ key, contentType, buffer });
     }
 
     // Update the user

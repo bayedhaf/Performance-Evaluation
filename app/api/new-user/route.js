@@ -5,8 +5,7 @@ import User from '@/models/User';
 import Department from '@/models/Department';
 import Team from '@/models/Team';
 import bcrypt from 'bcryptjs';
-import { writeFile } from 'fs/promises';
-import path from 'path';
+import { uploadBufferToS3 } from '@/lib/s3';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -37,13 +36,10 @@ export async function POST(request) {
     if (file && typeof file === 'object' && file.size > 0) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
-
-      
-      const fileName = `${Date.now()}-${file.name}`;
-      const filePath = path.join(process.cwd(), 'public/uploads', fileName);
-      await writeFile(filePath, buffer);
-
-      imageUrl = `/uploads/${fileName}`; 
+      const safeName = file.name?.replace(/[^a-zA-Z0-9._-]/g, '_') || 'upload.bin';
+      const key = `uploads/${Date.now()}-${safeName}`;
+      const contentType = file.type || 'application/octet-stream';
+      imageUrl = await uploadBufferToS3({ key, contentType, buffer });
     }
 
     const gender = formData.get('gender');

@@ -1,15 +1,17 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+// import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
 import Department from '@/models/Department';
 import User from '@/models/User';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 // GET department by ID
 export async function GET(req, { params }) {
   try {
+    const { authOptions } = await import('@/app/api/auth/[...nextauth]/route');
     const session = await getServerSession(authOptions);
     
     if (!session || session.user.role !== 'admin') {
@@ -49,6 +51,7 @@ export async function GET(req, { params }) {
 // PUT department by ID
 export async function PUT(req, { params }) {
   try {
+    const { authOptions } = await import('@/app/api/auth/[...nextauth]/route');
     const session = await getServerSession(authOptions);
     
     if (!session || session.user.role !== 'admin') {
@@ -104,6 +107,7 @@ export async function PUT(req, { params }) {
 // DELETE department by ID
 export async function DELETE(req, { params }) {
   try {
+    const { authOptions } = await import('@/app/api/auth/[...nextauth]/route');
     const session = await getServerSession(authOptions);
     
     if (!session || session.user.role !== 'admin') {

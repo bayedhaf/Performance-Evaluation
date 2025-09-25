@@ -1,13 +1,16 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+// import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
 import Evaluation from '@/models/Evaluation';
 import User from '@/models/User';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function POST(request, { params }) {
   try {
+    const { authOptions } = await import('@/app/api/auth/[...nextauth]/route');
     const session = await getServerSession(authOptions);
     
     if (!session) {

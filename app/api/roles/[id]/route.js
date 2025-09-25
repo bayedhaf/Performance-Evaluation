@@ -1,74 +1,25 @@
 import { NextResponse } from 'next/server';
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 
-export async function PUT(request, { params }) {
-  try {
-    const session = await getServerSession(authOptions);
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
+export async function PUT(req, { params }) {
+  try {
+    const { getAuthOptions } = await import('@/app/api/auth/[...nextauth]/route');
+    const session = await getServerSession(getAuthOptions());
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const { id } = params;
-    const body = await request.json();
-    const { role, permissions, isActive } = body;
-
     await connectDB();
-
-    // Find the user
-    const user = await User.findById(id);
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    // Validate role if provided
-    if (role) {
-      const validRoles = ['admin', 'team-leader', 'employee'];
-      if (!validRoles.includes(role)) {
-        return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
-      }
-    }
-
-    // Validate permissions if provided
-    if (permissions) {
-      const validPermissions = [
-        'create_task', 'edit_task', 'delete_task', 'evaluate_peer', 'evaluate_self',
-        'manage_users', 'manage_departments', 'approve_results', 'view_reports'
-      ];
-
-      const invalidPermissions = permissions.filter(p => !validPermissions.includes(p));
-      if (invalidPermissions.length > 0) {
-        return NextResponse.json({
-          error: `Invalid permissions: ${invalidPermissions.join(', ')}`
-        }, { status: 400 });
-      }
-    }
-
-    // Update user
-    const updateData = {};
-    if (role) updateData.role = role;
-    if (permissions) updateData.permissions = permissions;
-    if (typeof isActive === 'boolean') updateData.isActive = isActive;
-
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true }
-    ).select('-password');
-
-    return NextResponse.json({
-      success: true,
-      message: 'User updated successfully',
-      user: updatedUser
-    });
-
+    const body = await req.json();
+    const updated = await User.findByIdAndUpdate(params.id, body, { new: true, runValidators: true });
+    if (!updated) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    return NextResponse.json({ success: true, user: updated });
   } catch (error) {
-    console.error('User update error:', error);
+    console.error('Role update error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

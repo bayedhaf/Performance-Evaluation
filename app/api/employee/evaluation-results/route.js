@@ -1,15 +1,16 @@
 import { NextResponse } from 'next/server';
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
 import Evaluation from '@/models/Evaluation';
 import User from '@/models/User';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
   try {
-    const session = await getServerSession(authOptions);
+    const { getAuthOptions } = await import('@/app/api/auth/[...nextauth]/route');
+    const session = await getServerSession(getAuthOptions());
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

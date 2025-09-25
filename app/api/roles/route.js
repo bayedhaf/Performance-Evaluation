@@ -1,19 +1,15 @@
 import { NextResponse } from 'next/server';
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
-  const defaultRoles = [
-    { role: 'admin', description: getRoleDescription('admin'), permissions: getDefaultPermissions('admin'), users: [] },
-    { role: 'team-leader', description: getRoleDescription('team-leader'), permissions: getDefaultPermissions('team-leader'), users: [] },
-    { role: 'employee', description: getRoleDescription('employee'), permissions: getDefaultPermissions('employee'), users: [] },
-  ];
   try {
-    const session = await getServerSession(authOptions);
+    const { getAuthOptions } = await import('@/app/api/auth/[...nextauth]/route');
+    const session = await getServerSession(getAuthOptions());
     
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -69,6 +65,7 @@ export async function GET() {
 
 export async function POST(request) {
   try {
+    const { authOptions } = await import('@/app/api/auth/[...nextauth]/route');
     const session = await getServerSession(authOptions);
     
     if (!session || session.user.role !== 'admin') {

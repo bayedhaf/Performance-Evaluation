@@ -1,71 +1,31 @@
 import { NextResponse } from 'next/server';
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 
-export async function GET(request) {
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { getAuthOptions } = await import('@/app/api/auth/[...nextauth]/route');
+    const session = await getServerSession(getAuthOptions());
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     await connectDB();
-
-    // Fetch the current user's profile with department and team info
-    const user = await User.findById(session.user.id)
-      .populate('department', 'name')
-      .populate('team', 'name')
-      .select('-password');
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    // Transform user data to match frontend expectations
-    const profileData = {
-      id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      fullName: `${user.firstName} ${user.lastName}`,
-      email: user.email,
-      phone: user.phone || '',
-      position: user.position || '',
-      department: user.department?.name || '',
-      team: user.team?.name || '',
-      employeeId: user.employeeId || '',
-      profileImage: user.profileImage || '/image/astuLogo.png',
-      gender: user.gender || '',
-      dob: user.dob || '',
-      country: user.country || '',
-      region: user.region || '',
-      level: user.level || '',
-      experience: user.experience || '',
-      field: user.field || '',
-      instName: user.instName || '',
-      emgName: user.emgName || '',
-      emgRelation: user.emgRelation || '',
-      emgContact: user.emgContact || '',
-      emgJob: user.emgJob || '',
-      isActive: user.isActive,
-      role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt
-    };
-
-    return NextResponse.json({ success: true, user: profileData });
+    const user = await User.findById(session.user.id).select('-password').populate('department team');
+    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    return NextResponse.json(user);
   } catch (error) {
-    console.error('Error fetching employee profile:', error);
+    console.error('Employee profile error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 export async function PUT(request) {
   try {
-    const session = await getServerSession(authOptions);
+    const { getAuthOptions } = await import('@/app/api/auth/[...nextauth]/route');
+    const session = await getServerSession(getAuthOptions());
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

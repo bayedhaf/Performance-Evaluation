@@ -11,8 +11,8 @@ export const runtime = 'nodejs';
 // GET department by ID
 export async function GET(req, { params }) {
   try {
-    const { authOptions } = await import('@/app/api/auth/[...nextauth]/route');
-    const session = await getServerSession(authOptions);
+    const { getAuthOptions } = await import('@/app/api/auth/[...nextauth]/route');
+    const session = await getServerSession(getAuthOptions());
     
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -51,8 +51,8 @@ export async function GET(req, { params }) {
 // PUT department by ID
 export async function PUT(req, { params }) {
   try {
-    const { authOptions } = await import('@/app/api/auth/[...nextauth]/route');
-    const session = await getServerSession(authOptions);
+    const { getAuthOptions } = await import('@/app/api/auth/[...nextauth]/route');
+    const session = await getServerSession(getAuthOptions());
     
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -107,8 +107,8 @@ export async function PUT(req, { params }) {
 // DELETE department by ID
 export async function DELETE(req, { params }) {
   try {
-    const { authOptions } = await import('@/app/api/auth/[...nextauth]/route');
-    const session = await getServerSession(authOptions);
+    const { getAuthOptions } = await import('@/app/api/auth/[...nextauth]/route');
+    const session = await getServerSession(getAuthOptions());
     
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

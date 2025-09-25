@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense, useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -10,12 +11,11 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 
-export default function ResetPasswordPage() {
+function ResetPasswordInner() {
   const [form, setForm] = useState({ password: '', confirmPassword: '' })
   const [pending, setPending] = useState(false)
   const [message, setMessage] = useState('')
@@ -193,6 +193,14 @@ export default function ResetPasswordPage() {
        
       </div>
     </div>
+  )
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <ResetPasswordInner />
+    </Suspense>
   )
 }
 

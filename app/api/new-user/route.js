@@ -9,6 +9,9 @@ import bcrypt from 'bcryptjs';
 import { writeFile } from 'fs/promises';
 import path from 'path';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 export async function POST(request) {
   try {
     const session = await getServerSession(authOptions);

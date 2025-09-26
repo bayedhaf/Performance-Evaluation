@@ -59,6 +59,5 @@ export const config = {
     '/team-leader/:path*',
     '/employee/:path*',
     '/profile/:path*',
-    '/api/:path*',
   ],
 };

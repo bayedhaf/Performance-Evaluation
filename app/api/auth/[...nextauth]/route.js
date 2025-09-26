@@ -1,5 +1,4 @@
 import NextAuth from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import Department from '@/models/Department';
@@ -9,7 +8,8 @@ import bcrypt from 'bcryptjs';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export function getAuthOptions() {
+export async function getAuthOptions() {
+  const { default: CredentialsProvider } = await import('next-auth/providers/credentials');
   return {
     providers: [
       CredentialsProvider({
@@ -130,5 +130,14 @@ export function getAuthOptions() {
   };
 }
 
-export const GET = (req, ctx) => NextAuth(getAuthOptions())(req, ctx);
-export const POST = (req, ctx) => NextAuth(getAuthOptions())(req, ctx);
+export const GET = async (req, ctx) => {
+  const options = await getAuthOptions();
+  const handler = NextAuth(options);
+  return handler(req, ctx);
+};
+
+export const POST = async (req, ctx) => {
+  const options = await getAuthOptions();
+  const handler = NextAuth(options);
+  return handler(req, ctx);
+};
